@@ -156,7 +156,7 @@ beian:
 #  --------小埋主题 追加配置
 # Online daovoice 即时通讯插件(请到 http://dashboard.daovoice.io/ 申请key)
 daovoice:
-  enable: true  #是否启用
+  enable: false  #是否启用
   app_id: 250cb4aa
 # 不蒜子访客统计
 busuanzi: true
