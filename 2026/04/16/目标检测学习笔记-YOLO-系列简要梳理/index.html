@@ -1,0 +1,1155 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Feng Zichao">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="目标检测学习笔记：YOLO 系列简要梳理目标检测是计算机视觉中的一个经典任务。相比图像分类只需要判断“图中有什么”，目标检测还需要进一步回答“目标在哪里”。因此，一个检测模型通常需要同时完成两个子任务：分类和定位。分类负责判断目标类别，定位负责预测目标框的位置。 YOLO 是 You Only Look Once 的缩写，是目标检测领域中非常重要的一条技术路线。它的核心思想是：不再像两阶段检测器那">
+<meta property="og:type" content="article">
+<meta property="og:title" content="目标检测学习笔记：YOLO 系列简要梳理">
+<meta property="og:url" content="https://fengzichao.github.io/2026/04/16/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-YOLO-%E7%B3%BB%E5%88%97%E7%AE%80%E8%A6%81%E6%A2%B3%E7%90%86/index.html">
+<meta property="og:site_name" content="Feng Zichao">
+<meta property="og:description" content="目标检测学习笔记：YOLO 系列简要梳理目标检测是计算机视觉中的一个经典任务。相比图像分类只需要判断“图中有什么”，目标检测还需要进一步回答“目标在哪里”。因此，一个检测模型通常需要同时完成两个子任务：分类和定位。分类负责判断目标类别，定位负责预测目标框的位置。 YOLO 是 You Only Look Once 的缩写，是目标检测领域中非常重要的一条技术路线。它的核心思想是：不再像两阶段检测器那">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://fengzichao.github.io/img/post/yolo-notes.png">
+<meta property="article:published_time" content="2026-04-16T13:20:00.000Z">
+<meta property="article:modified_time" content="2026-05-23T15:12:09.309Z">
+<meta property="article:author" content="Feng Zichao">
+<meta property="article:tag" content="YOLO">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="目标检测">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://fengzichao.github.io/img/post/yolo-notes.png">
+  
+  
+  
+  <title>目标检测学习笔记：YOLO 系列简要梳理 - Feng Zichao</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"fengzichao.github.io","root":"/","version":"1.9.9","typing":{"enable":false,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Zichao</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/about/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/post/yolo-notes.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">目标检测学习笔记：YOLO 系列简要梳理</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-04-16 21:20" pubdate>
+          2026年4月16日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          75 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">目标检测学习笔记：YOLO 系列简要梳理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="目标检测学习笔记：YOLO-系列简要梳理"><a href="#目标检测学习笔记：YOLO-系列简要梳理" class="headerlink" title="目标检测学习笔记：YOLO 系列简要梳理"></a>目标检测学习笔记：YOLO 系列简要梳理</h1><p>目标检测是计算机视觉中的一个经典任务。相比图像分类只需要判断“图中有什么”，目标检测还需要进一步回答“目标在哪里”。因此，一个检测模型通常需要同时完成两个子任务：<strong>分类</strong>和<strong>定位</strong>。分类负责判断目标类别，定位负责预测目标框的位置。</p>
+<p>YOLO 是 <strong>You Only Look Once</strong> 的缩写，是目标检测领域中非常重要的一条技术路线。它的核心思想是：不再像两阶段检测器那样先生成候选区域，再逐个分类，而是直接用一个神经网络在一次前向传播中同时预测目标框和类别概率。也就是说，YOLO 将目标检测任务统一建模为一个端到端的回归问题。</p>
+<span id="more"></span>
+
+<p>从 YOLOv1 到 YOLO26，YOLO 系列已经不只是一个具体模型，而逐渐演化成了一类强调 <strong>实时性、工程部署、多尺度检测和端到端推理</strong> 的检测框架。不同版本之间并不完全来自同一个团队，命名体系也比较复杂，但它们共同推动了实时目标检测的发展。</p>
+<p>这篇笔记主要记录我对 YOLO 系列的简要理解，重点关注它为什么快、各个阶段大致解决了什么问题，以及后续学习目标检测时应该重点关注哪些模块。</p>
+<hr>
+<h2 id="1-目标检测任务到底在做什么？"><a href="#1-目标检测任务到底在做什么？" class="headerlink" title="1. 目标检测任务到底在做什么？"></a>1. 目标检测任务到底在做什么？</h2><p>目标检测的输入是一张图像，输出通常包括：</p>
+<ul>
+<li>目标类别；</li>
+<li>目标框位置；</li>
+<li>置信度分数。</li>
+</ul>
+<p>例如，给定一张图像，检测模型需要输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs text">person: [x1, y1, x2, y2], score = 0.93<br>car:    [x1, y1, x2, y2], score = 0.88<br></code></pre></td></tr></table></figure>
+
+<p>其中 <code>[x1, y1, x2, y2]</code> 表示目标框的左上角和右下角坐标。现代检测模型有时也会使用中心点坐标加宽高的形式，例如 <code>[cx, cy, w, h]</code>。</p>
+<p>目标检测相比分类更难，主要有几个原因：</p>
+<ol>
+<li>一张图里可能有多个目标；</li>
+<li>同一类别目标可能大小不同；</li>
+<li>目标之间可能互相遮挡；</li>
+<li>小目标容易在深层特征中丢失；</li>
+<li>检测结果不仅要分类正确，还要定位准确。</li>
+</ol>
+<p>因此，目标检测模型通常需要同时考虑 <strong>特征提取、尺度融合、分类预测、边界框回归、样本分配、损失函数和后处理</strong> 等问题。</p>
+<hr>
+<h2 id="2-YOLO-的核心思想"><a href="#2-YOLO-的核心思想" class="headerlink" title="2. YOLO 的核心思想"></a>2. YOLO 的核心思想</h2><p>YOLOv1 的核心贡献是提出了一种非常直接的检测范式：</p>
+<blockquote>
+<p>将目标检测看作一个统一的回归问题，用一个神经网络直接从整张图像预测边界框和类别概率。</p>
+</blockquote>
+<p>在 YOLOv1 中，图像会被划分为一个网格。如果某个目标的中心落在某个网格单元内，那么这个网格单元就负责预测这个目标。每个网格单元会预测若干个边界框、置信度以及类别概率。</p>
+<p>这种设计有几个明显优点：</p>
+<ul>
+<li>速度快；</li>
+<li>流程简单；</li>
+<li>可以端到端训练；</li>
+<li>适合实时检测场景。</li>
+</ul>
+<p>但 YOLOv1 也有明显缺点：</p>
+<ul>
+<li>对小目标不够友好；</li>
+<li>对密集目标容易漏检；</li>
+<li>定位精度相比两阶段检测器偏弱；</li>
+<li>每个网格能负责的目标数量有限。</li>
+</ul>
+<p>后续 YOLO 系列的大量改进，其实都可以理解为围绕这些问题展开：如何提高定位精度？如何增强小目标检测？如何更好地融合多尺度特征？如何减少后处理带来的延迟？如何更方便地部署？</p>
+<hr>
+<h2 id="3-现代-YOLO-的基本结构"><a href="#3-现代-YOLO-的基本结构" class="headerlink" title="3. 现代 YOLO 的基本结构"></a>3. 现代 YOLO 的基本结构</h2><p>虽然 YOLO 系列版本很多，但现代 YOLO 模型通常可以抽象为三个部分：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">Backbone -&gt; Neck -&gt; Head<br></code></pre></td></tr></table></figure>
+
+<h3 id="3-1-Backbone"><a href="#3-1-Backbone" class="headerlink" title="3.1 Backbone"></a>3.1 Backbone</h3><p>Backbone 是特征提取网络，负责从输入图像中提取不同层次的视觉特征。</p>
+<p>浅层特征分辨率高，包含更多边缘、纹理、局部结构信息，适合小目标检测。深层特征语义更强，能够表达更抽象的类别信息，适合大目标和复杂目标识别。</p>
+<h3 id="3-2-Neck"><a href="#3-2-Neck" class="headerlink" title="3.2 Neck"></a>3.2 Neck</h3><p>Neck 是特征融合模块，负责融合不同尺度的特征。目标检测需要同时处理大目标和小目标，因此多尺度特征融合非常重要。</p>
+<p>常见的 Neck 结构包括：</p>
+<ul>
+<li>FPN；</li>
+<li>PAN；</li>
+<li>SPP；</li>
+<li>BiFPN；</li>
+<li>各类 CSP &#x2F; ELAN &#x2F; C2f &#x2F; C3 变体。</li>
+</ul>
+<h3 id="3-3-Head"><a href="#3-3-Head" class="headerlink" title="3.3 Head"></a>3.3 Head</h3><p>Head 是检测头，负责输出最终预测结果。检测头通常需要预测：</p>
+<ul>
+<li>类别分数；</li>
+<li>边界框坐标；</li>
+<li>目标置信度；</li>
+<li>有些版本还会输出分布式框回归信息或其他辅助信息。</li>
+</ul>
+<p>YOLO 系列很多关键变化都发生在 Head 上，例如 anchor-based 到 anchor-free、耦合头到解耦头、NMS-based 到 NMS-free。</p>
+<hr>
+<h2 id="4-YOLOv1：实时检测的起点"><a href="#4-YOLOv1：实时检测的起点" class="headerlink" title="4. YOLOv1：实时检测的起点"></a>4. YOLOv1：实时检测的起点</h2><p>YOLOv1 是 YOLO 系列的起点。它第一次明确提出用单个神经网络直接完成目标检测，将检测任务统一成一个回归问题。</p>
+<p>它的特点是：</p>
+<ul>
+<li>单阶段检测；</li>
+<li>一次前向传播完成预测；</li>
+<li>将图像划分为网格；</li>
+<li>每个网格负责预测目标；</li>
+<li>实时速度非常突出。</li>
+</ul>
+<p>YOLOv1 最大的意义不在于精度达到最强，而在于它提出了一种非常简洁的检测思路。它证明了目标检测不一定要依赖复杂的候选区域生成流程，也可以通过统一网络直接完成。</p>
+<p>不过，YOLOv1 的网格机制也限制了它对密集目标和小目标的检测能力。如果多个目标中心落在同一个网格中，模型可能无法很好地区分它们。</p>
+<hr>
+<h2 id="5-YOLOv2-YOLO9000：更快、更强、更通用"><a href="#5-YOLOv2-YOLO9000：更快、更强、更通用" class="headerlink" title="5. YOLOv2 &#x2F; YOLO9000：更快、更强、更通用"></a>5. YOLOv2 &#x2F; YOLO9000：更快、更强、更通用</h2><p>YOLOv2 又被称为 YOLO9000，它在 YOLOv1 基础上引入了大量改进。</p>
+<p>主要改进包括：</p>
+<ul>
+<li>Batch Normalization；</li>
+<li>高分辨率分类器；</li>
+<li>Anchor Boxes；</li>
+<li>多尺度训练；</li>
+<li>更好的 backbone；</li>
+<li>通过 WordTree 扩展到更多类别。</li>
+</ul>
+<p>YOLOv2 的意义在于，它让 YOLO 从一个“速度很快但精度有限”的模型，变成了更实用的目标检测框架。Anchor 的引入也让 YOLO 与当时主流检测器的设计更加接近。</p>
+<p>从这个阶段开始，YOLO 不再只是强调速度，而是开始追求速度与精度之间的平衡。</p>
+<hr>
+<h2 id="6-YOLOv3：多尺度检测成为核心"><a href="#6-YOLOv3：多尺度检测成为核心" class="headerlink" title="6. YOLOv3：多尺度检测成为核心"></a>6. YOLOv3：多尺度检测成为核心</h2><p>YOLOv3 是一个非常经典的版本。它使用 Darknet-53 作为 backbone，并引入多尺度预测，使模型可以在不同尺度的特征图上检测目标。</p>
+<p>YOLOv3 的几个关键词是：</p>
+<ul>
+<li>Darknet-53；</li>
+<li>多尺度检测；</li>
+<li>类似 FPN 的特征融合；</li>
+<li>logistic classifier；</li>
+<li>anchor-based detection。</li>
+</ul>
+<p>多尺度检测对目标检测非常重要。因为小目标在深层特征图上可能只剩下很少像素，如果只在单一尺度上检测，很容易漏检。YOLOv3 通过多个尺度的检测头提升了对不同大小目标的适应能力。</p>
+<p>从学习角度看，YOLOv3 是理解 YOLO 系列结构的一个重要版本。很多后续 YOLO 模型虽然结构更复杂，但基本思路仍然可以从 YOLOv3 的多尺度检测框架中找到影子。</p>
+<hr>
+<h2 id="7-YOLOv4：工程技巧的大集合"><a href="#7-YOLOv4：工程技巧的大集合" class="headerlink" title="7. YOLOv4：工程技巧的大集合"></a>7. YOLOv4：工程技巧的大集合</h2><p>YOLOv4 是一个非常有代表性的工程化版本。它并不是只提出一个单独模块，而是系统性地整合了大量能够提升检测性能的技巧。</p>
+<p>常见关键词包括：</p>
+<ul>
+<li>CSPDarknet53；</li>
+<li>SPP；</li>
+<li>PAN；</li>
+<li>Mosaic 数据增强；</li>
+<li>CIoU Loss；</li>
+<li>Mish 激活函数；</li>
+<li>Bag of Freebies；</li>
+<li>Bag of Specials。</li>
+</ul>
+<p>YOLOv4 的启发在于：目标检测模型的性能并不只取决于网络结构。数据增强、损失函数、标签分配、训练策略、正则化方法、后处理和部署优化都会显著影响最终效果。</p>
+<p>这对做实验很重要。有时候模型结构改动很小，但如果训练策略、增强方式或者损失函数设计得更好，性能也可能明显提升。</p>
+<hr>
+<h2 id="8-YOLOv5：工程化和易用性推动普及"><a href="#8-YOLOv5：工程化和易用性推动普及" class="headerlink" title="8. YOLOv5：工程化和易用性推动普及"></a>8. YOLOv5：工程化和易用性推动普及</h2><p>YOLOv5 并不是原始 YOLO 作者提出的版本，但它在实际应用中非常流行。它使用 PyTorch 实现，训练、验证、推理和部署流程都比较完善，因此成为很多人第一次训练检测模型时接触的框架。</p>
+<p>YOLOv5 的优点包括：</p>
+<ul>
+<li>使用方便；</li>
+<li>文档和社区资源丰富；</li>
+<li>支持不同模型规模；</li>
+<li>训练脚本完整；</li>
+<li>易于导出 ONNX、TensorRT 等格式；</li>
+<li>适合工程部署。</li>
+</ul>
+<p>从科研和工程实践角度看，YOLOv5 的价值不只是模型本身，而是它提供了一个完整、成熟、易用的目标检测工程框架。</p>
+<hr>
+<h2 id="9-YOLOv6-YOLOv7：工业部署和训练技巧"><a href="#9-YOLOv6-YOLOv7：工业部署和训练技巧" class="headerlink" title="9. YOLOv6 &#x2F; YOLOv7：工业部署和训练技巧"></a>9. YOLOv6 &#x2F; YOLOv7：工业部署和训练技巧</h2><p>YOLOv6 更强调工业部署。它关注模型在不同硬件上的速度、精度和部署便利性，适合实际生产环境中的检测任务。</p>
+<p>YOLOv7 则强调 trainable bag-of-freebies，即通过训练阶段的设计提升模型性能，而不显著增加推理阶段的计算成本。</p>
+<p>这一阶段说明，实时检测模型的发展已经不只是追求更高 mAP，而是同时关注：</p>
+<ul>
+<li>推理速度；</li>
+<li>模型参数量；</li>
+<li>FLOPs；</li>
+<li>训练稳定性；</li>
+<li>部署后延迟；</li>
+<li>不同硬件平台适配。</li>
+</ul>
+<p>这对实际应用非常重要。一个模型在论文中 AP 很高，但如果部署复杂、延迟高、显存占用大，也未必适合真实场景。</p>
+<hr>
+<h2 id="10-YOLOv8：Anchor-Free-和多任务统一"><a href="#10-YOLOv8：Anchor-Free-和多任务统一" class="headerlink" title="10. YOLOv8：Anchor-Free 和多任务统一"></a>10. YOLOv8：Anchor-Free 和多任务统一</h2><p>YOLOv8 是 Ultralytics 推出的版本。相比 YOLOv5，YOLOv8 更加强调统一接口和多任务支持。</p>
+<p>它的重要特点包括：</p>
+<ul>
+<li>anchor-free 预测；</li>
+<li>decoupled head；</li>
+<li>支持检测、分割、分类、姿态估计、旋转框检测等任务；</li>
+<li>训练和部署接口统一；</li>
+<li>工程易用性强。</li>
+</ul>
+<p>Anchor-free 是一个重要变化。传统 anchor-based 方法需要预设不同尺寸和比例的 anchor，而 anchor-free 方法减少了对人工 anchor 设计的依赖，使模型在不同数据集上的迁移更加方便。</p>
+<p>YOLOv8 的另一个意义是，它不再只是一个检测模型，而更像一个统一的视觉任务框架。</p>
+<hr>
+<h2 id="11-YOLOv9：关注梯度信息和网络结构"><a href="#11-YOLOv9：关注梯度信息和网络结构" class="headerlink" title="11. YOLOv9：关注梯度信息和网络结构"></a>11. YOLOv9：关注梯度信息和网络结构</h2><p>YOLOv9 的关键词是：</p>
+<ul>
+<li>PGI；</li>
+<li>GELAN。</li>
+</ul>
+<p>PGI 是 Programmable Gradient Information，关注深层网络训练过程中的梯度信息传递问题。GELAN 是 Generalized Efficient Layer Aggregation Network，用于构建更高效的网络结构。</p>
+<p>YOLOv9 给我的启发是：检测器设计不仅要看 forward 过程，也要看 backward 过程。也就是说，模型如何传播梯度、如何保留有用训练信号，也会影响最终检测效果。</p>
+<p>这和我之前关注的 SNN 训练、梯度蒸馏等问题有一定联系。很多时候，模型性能提升并不只来自推理结构，更来自训练过程中的信息流设计。</p>
+<hr>
+<h2 id="12-YOLOv10：走向端到端实时检测"><a href="#12-YOLOv10：走向端到端实时检测" class="headerlink" title="12. YOLOv10：走向端到端实时检测"></a>12. YOLOv10：走向端到端实时检测</h2><p>传统 YOLO 通常会预测大量候选框，然后使用 NMS 去除重复检测框。NMS 虽然有效，但它是一个后处理步骤，会带来额外延迟，也让模型不完全端到端。</p>
+<p>YOLOv10 的重要方向是 NMS-free。它通过 consistent dual assignments 等设计，使模型在训练和推理时能够减少对 NMS 的依赖，从而进一步接近端到端实时检测。</p>
+<p>YOLOv10 的意义在于，它开始更系统地解决 YOLO 系列中的一个老问题：</p>
+<blockquote>
+<p>如果目标检测最终还要依赖手工后处理，那么它是否真的算端到端？</p>
+</blockquote>
+<p>因此，YOLOv10 可以看作 YOLO 系列向端到端检测进一步发展的重要节点。</p>
+<hr>
+<h2 id="13-YOLO11：Ultralytics-系列的新阶段"><a href="#13-YOLO11：Ultralytics-系列的新阶段" class="headerlink" title="13. YOLO11：Ultralytics 系列的新阶段"></a>13. YOLO11：Ultralytics 系列的新阶段</h2><p>YOLO11 是 Ultralytics 在 YOLOv8 之后推出的版本。它延续了 Ultralytics 系列的工程化风格，强调性能、易用性和多任务支持。</p>
+<p>从学习角度看，我认为 YOLO11 可以放在 YOLOv8 之后理解：它不是完全推翻 YOLOv8，而是在已有工程框架基础上继续优化模型结构、效率和任务支持能力。</p>
+<p>在实际应用中，YOLO11 的意义更多体现在：</p>
+<ul>
+<li>更现代的模型设计；</li>
+<li>更好的工程接口；</li>
+<li>与 Ultralytics 生态保持兼容；</li>
+<li>方便训练、验证、导出和部署。</li>
+</ul>
+<hr>
+<h2 id="14-YOLOv12：Attention-Centric-YOLO"><a href="#14-YOLOv12：Attention-Centric-YOLO" class="headerlink" title="14. YOLOv12：Attention-Centric YOLO"></a>14. YOLOv12：Attention-Centric YOLO</h2><p>YOLOv12 的核心思路是将 attention 机制更深入地引入实时目标检测框架中。</p>
+<p>过去 YOLO 系列大多以 CNN 结构为主。CNN 的局部建模能力很强，速度也快，但全局建模能力有限。Transformer 和 attention 机制具有更强的全局建模能力，但通常计算开销较大，不容易满足实时检测需求。</p>
+<p>YOLOv12 尝试在速度和建模能力之间取得平衡，使 attention 机制能够在实时检测中发挥作用。</p>
+<p>从趋势上看，这说明 YOLO 系列开始越来越多地吸收 Transformer &#x2F; Attention 类方法的思想，而不再局限于传统 CNN 检测器。</p>
+<hr>
+<h2 id="15-YOLOv13：高阶关联与超图建模"><a href="#15-YOLOv13：高阶关联与超图建模" class="headerlink" title="15. YOLOv13：高阶关联与超图建模"></a>15. YOLOv13：高阶关联与超图建模</h2><p>YOLOv13 进一步关注复杂场景中的特征关联建模。它提出了 Hypergraph-based Adaptive Correlation Enhancement，也就是基于超图的自适应相关增强机制。</p>
+<p>传统卷积擅长局部建模，普通 self-attention 更偏向成对关系建模，而超图方法希望建模更高阶的多对多关系。这对于复杂场景、密集目标、多尺度关系可能会更有帮助。</p>
+<p>YOLOv13 的思路说明，目标检测中的特征融合不只是简单拼接或加权，还可以考虑更复杂的跨位置、跨尺度和高阶关系建模。</p>
+<hr>
+<h2 id="16-YOLO26：NMS-Free、边缘部署和新训练机制"><a href="#16-YOLO26：NMS-Free、边缘部署和新训练机制" class="headerlink" title="16. YOLO26：NMS-Free、边缘部署和新训练机制"></a>16. YOLO26：NMS-Free、边缘部署和新训练机制</h2><p>目前公开资料中，YOLO26 被描述为 YOLO 系列较新的版本，重点面向实时、端到端和边缘部署场景。需要注意的是，YOLO 后期版本的命名体系比较复杂，不同论文和团队可能会使用不同的编号或分支。因此这里将 YOLO26 作为“近期公开资料中的最新 YOLO 相关版本”来理解，而不是把它简单等同于从 YOLOv1 连续严格演化而来的唯一主线。</p>
+<p>YOLO26 相关资料中经常出现几个关键词：</p>
+<ul>
+<li>NMS-free inference；</li>
+<li>DFL removal；</li>
+<li>ProgLoss；</li>
+<li>STAL；</li>
+<li>MuSGD；</li>
+<li>edge deployment。</li>
+</ul>
+<p>其中，NMS-free 继续延续了 YOLOv10 之后的端到端趋势。传统检测器依赖 NMS 后处理，但 NMS 会增加部署延迟，也会引入阈值等超参数。YOLO26 进一步强调减少这类后处理依赖，使检测流程更加直接。</p>
+<p>DFL removal 则与部署效率有关。DFL 在很多现代检测器中用于提升边界框回归精度，但也会增加导出和部署复杂度。移除或简化 DFL，有利于模型在边缘设备上部署。</p>
+<p>STAL 可以理解为 Small-Target-Aware Label Assignment，即更加关注小目标的标签分配策略。小目标检测一直是 YOLO 系列中的难点，因为小目标像素少、特征弱，容易在下采样过程中丢失。</p>
+<p>ProgLoss 则强调动态或渐进式的损失平衡，使训练过程更加稳定。MuSGD 被描述为一种新的优化策略，用于稳定轻量模型训练。</p>
+<p>从我的理解来看，YOLO26 的重点不是单纯追求更复杂的结构，而是围绕实际部署中的几个痛点进行优化：</p>
+<ol>
+<li>如何减少后处理？</li>
+<li>如何让模型更容易导出和部署？</li>
+<li>如何改善小目标检测？</li>
+<li>如何在轻量化模型上保持训练稳定？</li>
+<li>如何在边缘设备上取得更好的速度和精度平衡？</li>
+</ol>
+<p>这说明 YOLO 系列已经从“实时检测模型”逐渐发展为“面向部署的实时视觉系统”。</p>
+<hr>
+<h2 id="17-YOLO-系列发展的几条主线"><a href="#17-YOLO-系列发展的几条主线" class="headerlink" title="17. YOLO 系列发展的几条主线"></a>17. YOLO 系列发展的几条主线</h2><p>虽然 YOLO 版本很多，但可以从几条主线理解它的发展。</p>
+<h3 id="17-1-从两阶段到一阶段"><a href="#17-1-从两阶段到一阶段" class="headerlink" title="17.1 从两阶段到一阶段"></a>17.1 从两阶段到一阶段</h3><p>YOLO 最初的突破在于跳过候选区域生成过程，用一个网络直接预测检测结果。这使它天然适合实时检测。</p>
+<h3 id="17-2-从单尺度到多尺度"><a href="#17-2-从单尺度到多尺度" class="headerlink" title="17.2 从单尺度到多尺度"></a>17.2 从单尺度到多尺度</h3><p>YOLOv1 对小目标不友好，而 YOLOv3 之后多尺度检测成为标准配置。现代 YOLO 通常都会使用多层特征融合来兼顾大目标和小目标。</p>
+<h3 id="17-3-从-Anchor-Based-到-Anchor-Free"><a href="#17-3-从-Anchor-Based-到-Anchor-Free" class="headerlink" title="17.3 从 Anchor-Based 到 Anchor-Free"></a>17.3 从 Anchor-Based 到 Anchor-Free</h3><p>早期 YOLO 依赖 anchor boxes，后续版本逐渐向 anchor-free 发展。Anchor-free 减少了人工先验设计，使模型更容易迁移到不同数据集。</p>
+<h3 id="17-4-从-NMS-Based-到-NMS-Free"><a href="#17-4-从-NMS-Based-到-NMS-Free" class="headerlink" title="17.4 从 NMS-Based 到 NMS-Free"></a>17.4 从 NMS-Based 到 NMS-Free</h3><p>NMS 是传统检测器的重要后处理步骤，但它会带来额外延迟，也不完全端到端。YOLOv10 和 YOLO26 都在尝试减少或去掉 NMS。</p>
+<h3 id="17-5-从-CNN-到-Attention-高阶关系建模"><a href="#17-5-从-CNN-到-Attention-高阶关系建模" class="headerlink" title="17.5 从 CNN 到 Attention &#x2F; 高阶关系建模"></a>17.5 从 CNN 到 Attention &#x2F; 高阶关系建模</h3><p>YOLOv12、YOLOv13 说明 YOLO 系列开始更多吸收 attention、超图和全局关系建模思想，以增强复杂场景理解能力。</p>
+<h3 id="17-6-从模型精度到部署友好"><a href="#17-6-从模型精度到部署友好" class="headerlink" title="17.6 从模型精度到部署友好"></a>17.6 从模型精度到部署友好</h3><p>现代 YOLO 不仅关注 mAP，还关注延迟、参数量、FLOPs、导出格式、硬件适配和边缘部署。</p>
+<hr>
+<h2 id="18-学习-YOLO-应该重点关注什么？"><a href="#18-学习-YOLO-应该重点关注什么？" class="headerlink" title="18. 学习 YOLO 应该重点关注什么？"></a>18. 学习 YOLO 应该重点关注什么？</h2><p>如果只是使用 YOLO 训练自己的数据集，掌握数据格式、训练命令和参数设置就可以入门。但如果想真正理解 YOLO，我认为需要重点关注以下几个问题。</p>
+<h3 id="18-1-检测头输出什么？"><a href="#18-1-检测头输出什么？" class="headerlink" title="18.1 检测头输出什么？"></a>18.1 检测头输出什么？</h3><p>要理解模型最后到底预测了什么，包括类别、框坐标、置信度、分布式回归信息等。</p>
+<h3 id="18-2-样本分配怎么做？"><a href="#18-2-样本分配怎么做？" class="headerlink" title="18.2 样本分配怎么做？"></a>18.2 样本分配怎么做？</h3><p>一个真实目标由哪个预测位置负责？正负样本如何划分？这是检测模型训练中的核心问题之一。</p>
+<h3 id="18-3-定位损失怎么设计？"><a href="#18-3-定位损失怎么设计？" class="headerlink" title="18.3 定位损失怎么设计？"></a>18.3 定位损失怎么设计？</h3><p>常见定位损失包括 IoU Loss、GIoU、DIoU、CIoU、DFL 等。不同损失会影响框回归精度和训练稳定性。</p>
+<h3 id="18-4-多尺度特征如何融合？"><a href="#18-4-多尺度特征如何融合？" class="headerlink" title="18.4 多尺度特征如何融合？"></a>18.4 多尺度特征如何融合？</h3><p>小目标依赖高分辨率特征，大目标依赖强语义特征。Neck 结构对检测性能影响很大。</p>
+<h3 id="18-5-后处理如何影响部署？"><a href="#18-5-后处理如何影响部署？" class="headerlink" title="18.5 后处理如何影响部署？"></a>18.5 后处理如何影响部署？</h3><p>NMS、置信度阈值、IoU 阈值、TensorRT、ONNX、量化等都会影响实际推理效果。</p>
+<hr>
+<h2 id="19-我的理解"><a href="#19-我的理解" class="headerlink" title="19. 我的理解"></a>19. 我的理解</h2><p>YOLO 系列之所以重要，是因为它很好地连接了学术研究和工程应用。一方面，它体现了目标检测中的核心问题：特征提取、多尺度融合、边界框回归、标签分配、损失设计和后处理。另一方面，它又非常容易落地，适合快速训练自己的数据集。</p>
+<p>从 YOLOv1 到 YOLO26，YOLO 的发展可以粗略理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">快速检测 -&gt; 多尺度检测 -&gt; 工程化部署 -&gt; Anchor-Free -&gt; NMS-Free -&gt; 端到端与边缘优化<br></code></pre></td></tr></table></figure>
+
+<p>早期 YOLO 解决的是“能不能实时检测”的问题；中期 YOLO 解决的是“如何在速度和精度之间平衡”的问题；近年的 YOLO 则更关注“如何端到端、如何部署、如何适配复杂场景和边缘设备”。</p>
+<p>对我来说，学习 YOLO 不只是为了会用一个检测框架，更重要的是借助 YOLO 理解目标检测系统中的关键设计取舍：为什么要做多尺度？为什么需要样本分配？为什么检测头设计这么重要？为什么后处理会影响端到端部署？这些问题比单纯记住某个版本的结构更有价值。</p>
+<hr>
+<h2 id="20-总结"><a href="#20-总结" class="headerlink" title="20. 总结"></a>20. 总结</h2><p>YOLO 系列非常庞杂，这篇笔记只是一个简要梳理。</p>
+<hr>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
+<li><p>Joseph Redmon, Santosh Divvala, Ross Girshick, Ali Farhadi. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1506.02640">You Only Look Once: Unified, Real-Time Object Detection</a>. arXiv, 2015.</p>
+</li>
+<li><p>Joseph Redmon, Ali Farhadi. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1612.08242">YOLO9000: Better, Faster, Stronger</a>. arXiv, 2016.</p>
+</li>
+<li><p>Joseph Redmon, Ali Farhadi. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1804.02767">YOLOv3: An Incremental Improvement</a>. arXiv, 2018.</p>
+</li>
+<li><p>Alexey Bochkovskiy, Chien-Yao Wang, Hong-Yuan Mark Liao. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2004.10934">YOLOv4: Optimal Speed and Accuracy of Object Detection</a>. arXiv, 2020.</p>
+</li>
+<li><p>Chuyi Li, Lulu Li, Hongliang Jiang, Kaiheng Weng, Yifei Geng, et al. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2209.02976">YOLOv6: A Single-Stage Object Detection Framework for Industrial Applications</a>. arXiv, 2022.</p>
+</li>
+<li><p>Chien-Yao Wang, Alexey Bochkovskiy, Hong-Yuan Mark Liao. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2207.02696">YOLOv7: Trainable Bag-of-Freebies Sets New State-of-the-Art for Real-Time Object Detectors</a>. arXiv, 2022.</p>
+</li>
+<li><p>Ultralytics. <a target="_blank" rel="noopener" href="https://docs.ultralytics.com/models/yolov8/">YOLOv8 Documentation</a>.</p>
+</li>
+<li><p>Chien-Yao Wang, I-Hau Yeh, Hong-Yuan Mark Liao. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2402.13616">YOLOv9: Learning What You Want to Learn Using Programmable Gradient Information</a>. arXiv, 2024.</p>
+</li>
+<li><p>Ao Wang, Hui Chen, Lihao Liu, Kai Chen, Zijia Lin, Jungong Han, Guiguang Ding. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2405.14458">YOLOv10: Real-Time End-to-End Object Detection</a>. arXiv, 2024.</p>
+</li>
+<li><p>Ultralytics. <a target="_blank" rel="noopener" href="https://docs.ultralytics.com/models/yolo11/">YOLO11 Documentation</a>.</p>
+</li>
+<li><p>Yunjie Tian, Qixiang Ye, David Doermann. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2502.12524">YOLOv12: Attention-Centric Real-Time Object Detectors</a>. arXiv, 2025.</p>
+</li>
+<li><p>Mengqi Lei, Siqi Li, Yihong Wu, Han Hu, You Zhou, Xinhu Zheng, Guiguang Ding, Shaoyi Du, Zongze Wu, Yue Gao. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2506.17733">YOLOv13: Real-Time Object Detection with Hypergraph-Enhanced Adaptive Visual Perception</a>. arXiv, 2025.</p>
+</li>
+<li><p>Ranjan Sapkota, Rahul Harsha Cheppally, Ajay Sharda, Manoj Karkee. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2509.25164">YOLO26: Key Architectural Enhancements and Performance Benchmarking for Real-Time Object Detection</a>. arXiv, 2025.</p>
+</li>
+<li><p>Ranjan Sapkota, Manoj Karkee. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2510.09653">Ultralytics YOLO Evolution: An Overview of YOLO26, YOLO11, YOLOv8 and YOLOv5 Object Detectors for Computer Vision and Pattern Recognition</a>. arXiv, 2025.</p>
+</li>
+<li><p>Sudip Chakrabarty. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2601.12882">YOLO26: An Analysis of NMS-Free End to End Framework for Real-Time Object Detection</a>. arXiv, 2026.</p>
+</li>
+<li><p>Ranjan Sapkota, Manoj Karkee. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2602.00168">YOLOE-26: Integrating YOLO26 with YOLOE for Real-Time Open-Vocabulary Instance Segmentation</a>. arXiv, 2026.</p>
+</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%A7%91%E7%A0%94%E7%AC%94%E8%AE%B0/" class="category-chain-item">科研笔记</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="print-no-link">#深度学习</a>
+      
+        <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" class="print-no-link">#目标检测</a>
+      
+        <a href="/tags/YOLO/" class="print-no-link">#YOLO</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>目标检测学习笔记：YOLO 系列简要梳理</div>
+      <div>https://fengzichao.github.io/2026/04/16/目标检测学习笔记-YOLO-系列简要梳理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Feng Zichao</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年4月16日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/05/23/%E4%B8%AA%E4%BA%BA%E7%BD%91%E9%A1%B5%E9%87%8D%E6%96%B0%E5%BC%80%E5%A7%8B/" title="个人网页重新开始">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">个人网页重新开始</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/08/26/%E4%B8%BA%E4%BB%80%E4%B9%88%E6%88%91%E5%96%9C%E6%AC%A2%E6%B4%9B%E5%A4%A9%E4%BE%9D/" title="为什么我喜欢洛天依">
+                        <span class="hidden-mobile">为什么我喜欢洛天依</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"dark"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <span>© 2026 Feng Zichao</span> <i class="iconfont icon-love"></i> <span>AI · Research · Life</span> <br> <span>Powered by Hexo & Fluid</span> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
