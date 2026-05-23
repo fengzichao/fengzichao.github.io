@@ -505,13 +505,13 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/" class="print-no-link">#生活记录</a>
+        <a href="/tags/%E5%9B%9E%E5%BF%86/" class="print-no-link">#回忆</a>
       
-        <a href="/tags/%E6%88%90%E9%95%BF/" class="print-no-link">#成长</a>
+        <a href="/tags/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/" class="print-no-link">#生活记录</a>
       
         <a href="/tags/%E5%A4%A7%E5%AD%A6%E7%94%9F%E6%B4%BB/" class="print-no-link">#大学生活</a>
       
-        <a href="/tags/%E5%9B%9E%E5%BF%86/" class="print-no-link">#回忆</a>
+        <a href="/tags/%E6%88%90%E9%95%BF/" class="print-no-link">#成长</a>
       
     </div>
   
@@ -568,9 +568,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/05/23/%E6%9D%A5%E6%97%B6%E8%B7%AF-%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8E%E9%80%89%E6%8B%A9%E5%8C%97%E8%88%AA%E5%92%8C%E8%B5%B0%E5%90%91AI%E7%9A%84%E5%9B%9E%E5%BF%86/" title="来时路：一些关于选择北航和走向 AI 的回忆">
+                      <a href="/2026/05/23/%E6%99%B4%E5%A4%A9%E3%80%81%E9%9B%A8%E5%A4%A9%E5%92%8C%E5%91%A8%E6%9D%B0%E4%BC%A6/" title="晴天、雨天和周杰伦">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">来时路：一些关于选择北航和走向 AI 的回忆</span>
+                        <span class="hidden-mobile">晴天、雨天和周杰伦</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -578,8 +578,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/05/23/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-YOLO-%E7%B3%BB%E5%88%97%E7%AE%80%E8%A6%81%E6%A2%B3%E7%90%86/" title="目标检测学习笔记：YOLO 系列简要梳理">
-                        <span class="hidden-mobile">目标检测学习笔记：YOLO 系列简要梳理</span>
+                      <a href="/2026/05/23/%E6%9D%A5%E6%97%B6%E8%B7%AF-%E4%B8%80%E4%BA%9B%E5%85%B3%E4%BA%8E%E9%80%89%E6%8B%A9%E5%8C%97%E8%88%AA%E5%92%8C%E8%B5%B0%E5%90%91AI%E7%9A%84%E5%9B%9E%E5%BF%86/" title="来时路：一些关于选择北航和走向 AI 的回忆">
+                        <span class="hidden-mobile">来时路：一些关于选择北航和走向 AI 的回忆</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -637,6 +637,27 @@
 
   
 
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"dark"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
 
 
 
@@ -877,6 +898,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

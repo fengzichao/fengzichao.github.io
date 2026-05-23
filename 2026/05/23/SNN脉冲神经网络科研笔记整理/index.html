@@ -1,0 +1,1255 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=dark>
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Feng Zichao">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="SNN 脉冲神经网络科研笔记整理脉冲神经网络（Spiking Neural Networks, SNNs）通常被称为“第三代神经网络”。与传统人工神经网络（Artificial Neural Networks, ANNs）不同，SNN 不再用连续实值激活作为主要信息载体，而是用离散的脉冲事件（spikes）在时间维度上传递信息。它的核心特征可以概括为三点：二值脉冲、神经元动力学、事件驱动计算。 从">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SNN 脉冲神经网络科研笔记整理">
+<meta property="og:url" content="https://fengzichao.github.io/2026/05/23/SNN%E8%84%89%E5%86%B2%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%A7%91%E7%A0%94%E7%AC%94%E8%AE%B0%E6%95%B4%E7%90%86/index.html">
+<meta property="og:site_name" content="Feng Zichao">
+<meta property="og:description" content="SNN 脉冲神经网络科研笔记整理脉冲神经网络（Spiking Neural Networks, SNNs）通常被称为“第三代神经网络”。与传统人工神经网络（Artificial Neural Networks, ANNs）不同，SNN 不再用连续实值激活作为主要信息载体，而是用离散的脉冲事件（spikes）在时间维度上传递信息。它的核心特征可以概括为三点：二值脉冲、神经元动力学、事件驱动计算。 从">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-05-22T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-05-23T15:06:40.890Z">
+<meta property="article:author" content="Feng Zichao">
+<meta property="article:tag" content="SNN">
+<meta property="article:tag" content="深度学习">
+<meta property="article:tag" content="目标检测">
+<meta property="article:tag" content="神经形态计算">
+<meta property="article:tag" content="脉冲神经网络">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>SNN 脉冲神经网络科研笔记整理 - Feng Zichao</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1749284_5i9bdhy70f8.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/c/font_1736178_k526ubmyhba.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"fengzichao.github.io","root":"/","version":"1.9.9","typing":{"enable":false,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"expand_all":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false},"openkounter":{"server_url":"https://open-kounter.mintimate.cn","path":"window.location.pathname","ignore_local":false},"umami":{"src":null,"website_id":null,"domains":null,"start_time":"2024-01-01T00:00:00.000Z","token":null,"api_server":null}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Zichao</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content (desktop) -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/" target="_self">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/" target="_self">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/" target="_self">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/" target="_self">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/" target="_self">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile grid menu overlay -->
+<div id="mobile-grid-menu" class="d-lg-none">
+  <div class="mobile-grid-menu-inner">
+    <div class="container">
+      <div class="row">
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-home-fill"></i>
+                  <span>首页</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/archives/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-archive-fill"></i>
+                  <span>归档</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/categories/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-category-fill"></i>
+                  <span>分类</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/tags/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-tags-fill"></i>
+                  <span>标签</span>
+                </div>
+              </a>
+            </div>
+          
+        
+          
+          
+          
+          
+            <div class="col-4 mobile-grid-cell">
+              <a href="/about/" target="_self">
+                <div class="mobile-grid-item">
+                  <i class="iconfont icon-user-fill"></i>
+                  <span>关于</span>
+                </div>
+              </a>
+            </div>
+          
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-search-btn">
+            <a href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-search"></i>
+                <span>搜索</span>
+              </div>
+            </a>
+          </div>
+        
+        
+          <div class="col-4 mobile-grid-cell" id="mobile-color-toggle-btn"
+               data-label-light="开灯"
+               data-label-dark="关灯">
+            <a href="javascript:;" aria-label="Color Toggle">
+              <div class="mobile-grid-item">
+                <i class="iconfont icon-dark" id="mobile-color-toggle-icon"></i>
+                <span id="mobile-color-toggle-label">关灯</span>
+              </div>
+            </a>
+          </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/banner-post.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">SNN 脉冲神经网络科研笔记整理</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2026-05-23 00:00" pubdate>
+          2026年5月23日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          109 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">SNN 脉冲神经网络科研笔记整理</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="SNN-脉冲神经网络科研笔记整理"><a href="#SNN-脉冲神经网络科研笔记整理" class="headerlink" title="SNN 脉冲神经网络科研笔记整理"></a>SNN 脉冲神经网络科研笔记整理</h1><p>脉冲神经网络（Spiking Neural Networks, SNNs）通常被称为“第三代神经网络”。与传统人工神经网络（Artificial Neural Networks, ANNs）不同，SNN 不再用连续实值激活作为主要信息载体，而是用离散的脉冲事件（spikes）在时间维度上传递信息。它的核心特征可以概括为三点：<strong>二值脉冲、神经元动力学、事件驱动计算</strong>。</p>
+<p>从科研角度看，SNN 的吸引力不只是“更像大脑”。如果只把 SNN 理解成一种生物启发模型，很容易低估它在现代机器学习中的工程意义。更重要的是，SNN 在合适硬件和合适输入形式下，有机会利用稀疏脉冲活动减少计算与能耗；同时，它天然包含时间动态，因此适合处理事件相机、语音、神经形态传感器等时序稀疏信号。</p>
+<p>不过，SNN 也有非常现实的困难：脉冲发放函数不可导，时间步展开带来训练开销，深层结构优化困难，静态图像任务上与 ANN 仍存在性能差距，目标检测等密集预测任务中还会遇到连续回归信息与离散脉冲表示之间的矛盾。</p>
+<p>这篇笔记主要整理 SNN 的基础概念、训练方法、深层结构、能耗优势、视觉任务应用，以及我对近期 SNN 研究方向的一些理解。</p>
+<span id="more"></span>
+
+<hr>
+<h2 id="1-从-ANN-到-SNN：差别到底在哪里？"><a href="#1-从-ANN-到-SNN：差别到底在哪里？" class="headerlink" title="1. 从 ANN 到 SNN：差别到底在哪里？"></a>1. 从 ANN 到 SNN：差别到底在哪里？</h2><p>传统 ANN 中，每一层通常执行连续实值计算：</p>
+<p>$$<br>\mathbf{a}^{l} &#x3D; f(\mathbf{W}^{l}\mathbf{a}^{l-1} + \mathbf{b}^{l}),<br>$$</p>
+<p>其中 $f(\cdot)$ 可以是 ReLU、Sigmoid、GELU 等连续激活函数。神经元每次前向传播都会输出一个实值激活。</p>
+<p>SNN 中，神经元不再每一时刻都输出连续值，而是维护一个膜电位（membrane potential）状态。当膜电位超过阈值时，神经元发放一个二值脉冲：</p>
+<p>$$<br>s_t &#x3D;<br>\begin{cases}<br>1, &amp; u_t \geq V_{\mathrm{th}}, \\<br>0, &amp; u_t &lt; V_{\mathrm{th}}.<br>\end{cases}<br>$$</p>
+<p>其中 $u_t$ 表示 $t$ 时刻膜电位，$V_{\mathrm{th}}$ 表示发放阈值，$s_t$ 是二值脉冲输出。</p>
+<div style="border:1px solid rgba(125,211,252,0.25); border-radius:12px; padding:14px; margin:18px 0; background:rgba(15,23,42,0.55);">
+  <div style="font-weight:700; margin-bottom:10px;">图 1：ANN 与 SNN 的信息表示差异</div>
+  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:260px; padding:12px; border-radius:10px; background:rgba(30,41,59,0.65);">
+      <div style="font-weight:700;">ANN</div>
+      <div style="font-family:monospace; margin-top:8px;">
+        Input → Conv/Linear → ReLU/GELU → Real-valued activation
+      </div>
+      <div style="margin-top:8px;">信息载体：连续实值激活</div>
+      <div>计算形式：通常以 MAC 为主</div>
+    </div>
+    <div style="flex:1; min-width:260px; padding:12px; border-radius:10px; background:rgba(30,41,59,0.65);">
+      <div style="font-weight:700;">SNN</div>
+      <div style="font-family:monospace; margin-top:8px;">
+        Input spikes → Synapse → Membrane integration → Spike firing
+      </div>
+      <div style="margin-top:8px;">信息载体：时序二值脉冲</div>
+      <div>计算形式：事件驱动，理论上可用累加替代部分乘加</div>
+    </div>
+  </div>
+</div>
+
+
+<p>二者的核心差别不只是“激活值是否二值化”，而是 <strong>SNN 额外引入了时间和状态</strong>。同一个神经元在不同时间步的输出不是独立的，而受到此前膜电位积累与泄漏的影响。因此，SNN 更接近一种带内部状态的时序计算模型。</p>
+<hr>
+<h2 id="2-LIF-神经元：最常用的基本模型"><a href="#2-LIF-神经元：最常用的基本模型" class="headerlink" title="2. LIF 神经元：最常用的基本模型"></a>2. LIF 神经元：最常用的基本模型</h2><p>SNN 中常见的神经元模型包括 Hodgkin-Huxley、Izhikevich、Integrate-and-Fire、Leaky Integrate-and-Fire 等。深度学习场景中最常用的是 LIF（Leaky Integrate-and-Fire）模型，因为它在生物合理性和计算效率之间比较折中。</p>
+<p>连续时间下，LIF 神经元可写为：</p>
+<p>$$<br>\tau_m \frac{du(t)}{dt} &#x3D; -u(t) + R I(t),<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$u(t)$ 是膜电位；</li>
+<li>$\tau_m$ 是膜时间常数；</li>
+<li>$I(t)$ 是输入电流；</li>
+<li>$R$ 是膜电阻；</li>
+<li>泄漏项 $-u(t)$ 表示膜电位会随时间衰减。</li>
+</ul>
+<p>在深度学习实现中，通常使用离散时间形式：</p>
+<p>$$<br>u_t &#x3D; \lambda u_{t-1} + x_t - V_{\mathrm{th}} s_{t-1},<br>$$</p>
+<p>$$<br>s_t &#x3D; H(u_t - V_{\mathrm{th}}),<br>$$</p>
+<p>其中：</p>
+<ul>
+<li>$\lambda \in (0, 1)$ 是泄漏系数；</li>
+<li>$x_t$ 是当前输入；</li>
+<li>$H(\cdot)$ 是 Heaviside 阶跃函数；</li>
+<li>$s_{t-1}$ 表示上一时刻是否发放脉冲；</li>
+<li>$V_{\mathrm{th}} s_{t-1}$ 表示发放后的 reset 操作。</li>
+</ul>
+<p>也可以将其理解为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs text">输入电流 x_t<br>      ↓<br>膜电位累积 u_t<br>      ↓<br>超过阈值？<br>  ┌───┴────┐<br>  否       是<br>  ↓        ↓<br>保持状态   发放 spike，并 reset<br></code></pre></td></tr></table></figure>
+
+<p>SNN 的时间动态由“累积—泄漏—发放—重置”构成。这个过程看似简单，但它决定了 SNN 的训练、延迟、稀疏性和信息表达能力。</p>
+<hr>
+<h2 id="3-编码方式：静态图像如何变成脉冲？"><a href="#3-编码方式：静态图像如何变成脉冲？" class="headerlink" title="3. 编码方式：静态图像如何变成脉冲？"></a>3. 编码方式：静态图像如何变成脉冲？</h2><p>SNN 天然处理的是 spike train，但很多视觉任务输入是静态图像。因此，一个基本问题是：如何将实值图像编码成脉冲序列？</p>
+<p>常见编码方式如下。</p>
+<table>
+<thead>
+<tr>
+<th>编码方式</th>
+<th>核心思想</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Rate Coding</td>
+<td>像素强度越高，发放频率越高</td>
+<td>简单、稳定、容易实现</td>
+<td>需要较长时间步，延迟较高</td>
+</tr>
+<tr>
+<td>Temporal Coding</td>
+<td>像素强度决定首次发放时间</td>
+<td>延迟低，信息密度较高</td>
+<td>对时间精度敏感，训练更难</td>
+</tr>
+<tr>
+<td>Direct Coding</td>
+<td>直接将实值输入送入首层，后续层脉冲化</td>
+<td>训练方便，适合静态图像</td>
+<td>第一层不完全事件驱动</td>
+</tr>
+<tr>
+<td>Event-based Input</td>
+<td>直接使用事件相机输出</td>
+<td>最符合 SNN 稀疏时序特性</td>
+<td>数据集和任务相对有限</td>
+</tr>
+</tbody></table>
+<p>对静态图像任务而言，Rate Coding 曾经很常见，但它需要多个时间步累计发放率，导致延迟偏高。近年的深度 SNN 越来越关注低时间步甚至直接编码，这是因为实际部署中，$T$ 的大小会直接影响推理延迟和能耗。</p>
+<p>若输入为图像 $I \in [0,1]^{H \times W \times C}$，Rate Coding 可以形式化为：</p>
+<p>$$<br>s_{t,i} \sim \mathrm{Bernoulli}(I_i),<br>$$</p>
+<p>其中 $I_i$ 是第 $i$ 个像素或输入单元强度。经过 $T$ 个时间步后，用平均脉冲率近似原始强度：</p>
+<p>$$<br>\hat{I}<em>i &#x3D; \frac{1}{T} \sum</em>{t&#x3D;1}^{T} s_{t,i}.<br>$$</p>
+<p>这解释了为什么 Rate Coding 需要较长时间步：$T$ 越大，估计越稳定，但延迟也越高。</p>
+<hr>
+<h2 id="4-SNN-的训练困难：不可导脉冲函数"><a href="#4-SNN-的训练困难：不可导脉冲函数" class="headerlink" title="4. SNN 的训练困难：不可导脉冲函数"></a>4. SNN 的训练困难：不可导脉冲函数</h2><p>SNN 的核心训练难点来自脉冲函数：</p>
+<p>$$<br>s_t &#x3D; H(u_t - V_{\mathrm{th}}).<br>$$</p>
+<p>Heaviside 函数几乎处处导数为 0，在阈值处不可导：</p>
+<p>$$<br>\frac{dH(x)}{dx} &#x3D;<br>\begin{cases}<br>0, &amp; x \neq 0, \\<br>\text{undefined}, &amp; x &#x3D; 0.<br>\end{cases}<br>$$</p>
+<p>这使得标准反向传播无法直接用于 SNN。为了解决这个问题，常用方法是 <strong>替代梯度（Surrogate Gradient, SG）</strong>：前向传播仍然使用二值脉冲函数，反向传播时用一个连续函数的导数近似脉冲函数的梯度。</p>
+<p>例如，可以在反向传播时使用 Sigmoid 或矩形窗近似：</p>
+<p>$$<br>\frac{\partial s_t}{\partial u_t}<br>\approx<br>\gamma \max(0, 1 - |\gamma(u_t - V_{\mathrm{th}})|),<br>$$</p>
+<p>或者：</p>
+<p>$$<br>\frac{\partial s_t}{\partial u_t}<br>\approx<br>\alpha \cdot \sigma(\alpha x)(1 - \sigma(\alpha x)),<br>\quad x &#x3D; u_t - V_{\mathrm{th}}.<br>$$</p>
+<p>替代梯度的思想可以概括为：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs text">Forward:<br>    spike = Heaviside(u - threshold)<br><br>Backward:<br>    pretend d spike / d u is a smooth surrogate derivative<br></code></pre></td></tr></table></figure>
+
+<p>这种做法并不改变前向传播的脉冲性质，但为反向传播提供了可用梯度。Neftci 等人的综述系统介绍了 SNN 训练中 surrogate gradient 的思想与问题，是理解直接训练 SNN 的重要参考。</p>
+<hr>
+<h2 id="5-BPTT：在时间维度上展开-SNN"><a href="#5-BPTT：在时间维度上展开-SNN" class="headerlink" title="5. BPTT：在时间维度上展开 SNN"></a>5. BPTT：在时间维度上展开 SNN</h2><p>由于 SNN 神经元状态依赖历史时间步，训练时通常需要在时间维度上展开，类似训练 RNN 的 Backpropagation Through Time（BPTT）。</p>
+<p>对于一个 $T$ 时间步的 SNN，输出可以表示为：</p>
+<p>$$<br>\mathbf{y} &#x3D; \frac{1}{T}\sum_{t&#x3D;1}^{T} \mathbf{o}_t,<br>$$</p>
+<p>损失函数为：</p>
+<p>$$<br>\mathcal{L} &#x3D; \ell(\mathbf{y}, \mathbf{y}^{*}).<br>$$</p>
+<p>反向传播需要沿空间层级和时间维度同时传递梯度：</p>
+<p>$$<br>\begin{aligned}<br>\frac{\partial \mathcal{L}}{\partial \theta}<br>&amp;&#x3D; \sum_{t&#x3D;1}^{T}<br>\frac{\partial \mathcal{L}}{\partial \mathbf{s}_t}<br>\frac{\partial \mathbf{s}_t}{\partial \mathbf{u}_t}<br>\frac{\partial \mathbf{u}_t}{\partial \theta}.<br>\end{aligned}<br>$$</p>
+<p>其中 $\theta$ 是网络参数。注意，中间项 $\frac{\partial \mathbf{s}_t}{\partial \mathbf{u}_t}$ 正是需要替代梯度处理的部分。</p>
+<p>BPTT 的问题在于：</p>
+<ol>
+<li>需要保存每个时间步的状态，显存开销大；</li>
+<li>时间步 $T$ 增大时，训练成本近似线性增加；</li>
+<li>时间维度上的梯度传播可能不稳定；</li>
+<li>低时间步训练又容易造成信息不足。</li>
+</ol>
+<p>因此，现代 SNN 研究常常围绕“低时间步、高精度、低显存、稳定训练”展开。</p>
+<hr>
+<h2 id="6-ANN-SNN-转换与直接训练"><a href="#6-ANN-SNN-转换与直接训练" class="headerlink" title="6. ANN-SNN 转换与直接训练"></a>6. ANN-SNN 转换与直接训练</h2><p>SNN 训练大致有两条路线：<strong>ANN-SNN conversion</strong> 和 <strong>direct training</strong>。</p>
+<h3 id="6-1-ANN-SNN-转换"><a href="#6-1-ANN-SNN-转换" class="headerlink" title="6.1 ANN-SNN 转换"></a>6.1 ANN-SNN 转换</h3><p>ANN-SNN 转换的思路是：先训练一个高精度 ANN，再将 ANN 的 ReLU 激活映射为 SNN 的脉冲发放率。它的优点是容易继承 ANN 的高性能，缺点是通常需要较长时间步来近似连续激活，导致推理延迟较高。</p>
+<p>转换方法通常依赖激活归一化和阈值校准，使得 ANN 激活 $a$ 与 SNN 平均发放率对应：</p>
+<p>$$<br>a \approx \frac{1}{T}\sum_{t&#x3D;1}^{T} s_t.<br>$$</p>
+<h3 id="6-2-直接训练"><a href="#6-2-直接训练" class="headerlink" title="6.2 直接训练"></a>6.2 直接训练</h3><p>直接训练则从一开始就训练 SNN，通常结合 surrogate gradient 与 BPTT。它的优点是可以针对脉冲动态直接优化，更适合低时间步推理；缺点是训练难度更高，对网络结构、神经元参数和训练技巧更敏感。</p>
+<table>
+<thead>
+<tr>
+<th>路线</th>
+<th>优点</th>
+<th>缺点</th>
+<th>适合场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ANN-SNN 转换</td>
+<td>精度较高，易继承 ANN 模型</td>
+<td>时间步长，延迟高，转换误差</td>
+<td>静态图像分类、追求高精度</td>
+</tr>
+<tr>
+<td>直接训练</td>
+<td>支持低时间步，端到端优化</td>
+<td>优化困难，显存&#x2F;训练成本高</td>
+<td>低延迟任务、事件数据、神经形态部署</td>
+</tr>
+<tr>
+<td>混合训练&#x2F;蒸馏</td>
+<td>兼顾 ANN 知识与 SNN 动态</td>
+<td>设计复杂，需要合理对齐</td>
+<td>目标检测、语义分割、复杂视觉任务</td>
+</tr>
+</tbody></table>
+<p>从当前趋势看，低延迟直接训练和混合训练越来越重要。对于目标检测这类需要细粒度定位和多尺度特征的任务，单纯 ANN-SNN 转换往往难以充分解决连续回归信息损失问题。</p>
+<hr>
+<h2 id="7-深层-SNN：残差结构为什么困难？"><a href="#7-深层-SNN：残差结构为什么困难？" class="headerlink" title="7. 深层 SNN：残差结构为什么困难？"></a>7. 深层 SNN：残差结构为什么困难？</h2><p>在 ANN 中，ResNet 通过残差连接解决深层网络退化问题：</p>
+<p>$$<br>\mathbf{x}_{l+1} &#x3D; F(\mathbf{x}_l) + \mathbf{x}_l.<br>$$</p>
+<p>但在 SNN 中，残差连接并不能简单照搬。原因在于 SNN 中的激活是二值 spike，残差路径如果引入实值加法，可能破坏纯脉冲计算；如果保持二值，则信息表达能力和梯度传播又会受限。</p>
+<p>SEW-ResNet 提出 spike-element-wise residual connection，使深层 SNN 能更好地实现残差学习。其思想可以理解为：残差路径不是简单实值相加，而是围绕 spike 进行逐元素操作，从而在保持脉冲特性的同时改善深层优化。</p>
+<div style="border:1px solid rgba(125,211,252,0.25); border-radius:12px; padding:14px; margin:18px 0; background:rgba(15,23,42,0.55);">
+  <div style="font-weight:700; margin-bottom:10px;">图 2：SNN 深层结构中的残差设计问题</div>
+  <div style="font-family:monospace; white-space:pre; overflow-x:auto;">
+ANN ResNet:
+    x ────────────────┐
+    │                 ↓
+    └→ Conv → BN → ReLU → + → output
+
+
+<p>Naive Spiking ResNet:<br>    spike x ───────────────┐<br>    │                      ↓<br>    └→ Spiking Block ───── + → may introduce non-spike values</p>
+<p>Spike-friendly residual:<br>    spike x ───────────────┐<br>    │                      ↓<br>    └→ Spiking Block → spike-wise operation → spike output<br>  </div></p>
+</div>
+
+<p>深层 SNN 的关键不只是“加深网络”，而是要保证：</p>
+<ol>
+<li>信息能跨层稳定传递；</li>
+<li>梯度能跨层稳定传播；</li>
+<li>尽量保持 spike-driven 计算特性；</li>
+<li>不引入过多非脉冲实值操作。</li>
+</ol>
+<hr>
+<h2 id="8-SNN-Transformer：从-Spikformer-到-Spike-driven-Transformer"><a href="#8-SNN-Transformer：从-Spikformer-到-Spike-driven-Transformer" class="headerlink" title="8. SNN Transformer：从 Spikformer 到 Spike-driven Transformer"></a>8. SNN Transformer：从 Spikformer 到 Spike-driven Transformer</h2><p>随着 Transformer 在视觉任务中广泛应用，SNN 研究也开始探索 Transformer 结构。Spikformer 提出了 Spiking Self-Attention（SSA），尝试用 spike-form Query、Key、Value 建模稀疏视觉特征，并避免传统 softmax attention 中大量实值计算。</p>
+<p>一个简化的注意力形式为：</p>
+<p>$$<br>\mathrm{Attention}(Q, K, V) &#x3D; \mathrm{softmax}\left(\frac{QK^\top}{\sqrt{d}}\right)V.<br>$$</p>
+<p>但在 SNN 中，若直接使用实值 $QK^\top$ 和 softmax，会引入大量乘法和非脉冲操作。Spikformer&#x2F;Spike-driven Transformer 的研究重点在于：如何在保持全局建模能力的同时，尽量保持 spike-driven 计算。</p>
+<p>可以把这一方向理解为：</p>
+<pre><code class=" mermaid">flowchart LR
+    A[CNN-based SNN] --&gt; B[Deep SNN Backbone]
+    B --&gt; C[Spiking Transformer]
+    C --&gt; D[Spike-driven Attention]
+    D --&gt; E[Meta-SpikeFormer / General SNN Backbone]
+</code></pre>
+
+<p>如果 Mermaid 没有渲染，上图可以理解为一条研究主线：CNN 型 SNN 逐渐扩展到 Transformer 型 SNN，并进一步发展为可用于分类、检测、分割的通用脉冲骨干网络。</p>
+<p>近期 Spike-driven Transformer V2 &#x2F; Meta-SpikeFormer 的重要意义在于：它不只是做分类，而是尝试建立一个能够支持多种视觉任务的通用 SNN 架构。这说明 SNN 正在从“小数据集分类模型”逐渐走向“通用视觉骨干网络”。</p>
+<hr>
+<h2 id="9-为什么说-SNN-可能更节能？"><a href="#9-为什么说-SNN-可能更节能？" class="headerlink" title="9. 为什么说 SNN 可能更节能？"></a>9. 为什么说 SNN 可能更节能？</h2><p>SNN 的能耗优势通常来自两个方面：</p>
+<ol>
+<li>spike 是二值稀疏事件；</li>
+<li>在神经形态硬件上，可以用累加操作替代部分乘加操作。</li>
+</ol>
+<p>ANN 中常见计算是 MAC（Multiply-Accumulate）：</p>
+<p>$$<br>y &#x3D; \sum_i w_i x_i.<br>$$</p>
+<p>如果 $x_i$ 是二值 spike，则当 $s_i &#x3D; 1$ 时只需要累加对应权重，当 $s_i &#x3D; 0$ 时可以跳过：</p>
+<p>$$<br>y &#x3D; \sum_i w_i s_i.<br>$$</p>
+<p>因此，理论能耗可粗略写为：</p>
+<p>$$<br>E_{\mathrm{SNN}} \approx N_{\mathrm{AC}} E_{\mathrm{AC}} + E_{\mathrm{mem}} + E_{\mathrm{ctrl}},<br>$$</p>
+<p>而 ANN 更接近：</p>
+<p>$$<br>E_{\mathrm{ANN}} \approx N_{\mathrm{MAC}} E_{\mathrm{MAC}} + E_{\mathrm{mem}}.<br>$$</p>
+<p>其中 $E_{\mathrm{AC}}$ 通常低于 $E_{\mathrm{MAC}}$。但需要注意，SNN 是否真正节能取决于：</p>
+<ul>
+<li>spike firing rate；</li>
+<li>时间步 $T$；</li>
+<li>硬件是否支持事件驱动；</li>
+<li>是否存在大量非脉冲操作；</li>
+<li>数据搬运能耗；</li>
+<li>BatchNorm、残差、注意力等模块是否破坏 spike-driven 特性。</li>
+</ul>
+<p>因此，不能简单说“SNN 一定比 ANN 省电”。更准确的说法是：<strong>SNN 在稀疏事件输入、低时间步推理、神经形态硬件支持良好时，更可能体现能耗优势</strong>。</p>
+<hr>
+<h2 id="10-SNN-与事件相机"><a href="#10-SNN-与事件相机" class="headerlink" title="10. SNN 与事件相机"></a>10. SNN 与事件相机</h2><p>事件相机（Event Camera）不是按固定帧率输出图像，而是在像素亮度变化超过阈值时异步产生事件：</p>
+<p>$$<br>e_i &#x3D; (x_i, y_i, t_i, p_i),<br>$$</p>
+<p>其中 $(x_i, y_i)$ 为空间位置，$t_i$ 为时间戳，$p_i$ 为极性。事件相机具有高时间分辨率、高动态范围、低延迟和稀疏输出等特点。</p>
+<p>这与 SNN 的事件驱动机制天然匹配。</p>
+<pre><code class=" mermaid">flowchart LR
+    A[Event Camera] --&gt; B[Event Stream]
+    B --&gt; C[Temporal Binning / Voxel Grid]
+    B --&gt; D[Direct Spike Input]
+    C --&gt; E[SNN Backbone]
+    D --&gt; E
+    E --&gt; F[Classification / Detection / Tracking]
+</code></pre>
+
+<p>事件视觉是 SNN 最有潜力的应用方向之一。对于静态图像，SNN 往往需要额外编码；而事件相机本身就输出时空稀疏事件，天然适合作为 spike-based 模型的输入。</p>
+<p>在目标检测中，事件相机尤其适合高速运动、低光照、高动态范围场景。但这类任务也更困难，因为检测不仅要分类，还要定位，需要在稀疏事件流中恢复稳定空间结构。</p>
+<hr>
+<h2 id="11-SNN-用于目标检测为什么难？"><a href="#11-SNN-用于目标检测为什么难？" class="headerlink" title="11. SNN 用于目标检测为什么难？"></a>11. SNN 用于目标检测为什么难？</h2><p>目标检测比分类更难，因为它需要同时输出类别和边界框。对于 SNN 来说，主要困难包括：</p>
+<h3 id="11-1-连续回归与二值脉冲之间的矛盾"><a href="#11-1-连续回归与二值脉冲之间的矛盾" class="headerlink" title="11.1 连续回归与二值脉冲之间的矛盾"></a>11.1 连续回归与二值脉冲之间的矛盾</h3><p>边界框回归需要连续精细信息，而 spike 是二值离散的。若脉冲发放率不足，框坐标回归容易损失精度。</p>
+<h3 id="11-2-多尺度特征对信息保真度要求高"><a href="#11-2-多尺度特征对信息保真度要求高" class="headerlink" title="11.2 多尺度特征对信息保真度要求高"></a>11.2 多尺度特征对信息保真度要求高</h3><p>目标检测依赖 FPN&#x2F;PAN 等多尺度特征融合。SNN 中多层脉冲化会带来量化误差和时间延迟，使小目标特征更容易丢失。</p>
+<h3 id="11-3-时间步与实时性矛盾"><a href="#11-3-时间步与实时性矛盾" class="headerlink" title="11.3 时间步与实时性矛盾"></a>11.3 时间步与实时性矛盾</h3><p>增加时间步可以提高发放率估计稳定性，但也增加推理延迟。目标检测通常用于实时场景，低延迟很关键。</p>
+<h3 id="11-4-检测头设计不易脉冲化"><a href="#11-4-检测头设计不易脉冲化" class="headerlink" title="11.4 检测头设计不易脉冲化"></a>11.4 检测头设计不易脉冲化</h3><p>YOLO 类检测头涉及分类、定位、objectness、DFL 或 anchor-free 回归等复杂输出。哪些部分脉冲化，哪些部分保留实值，是实际设计中的关键问题。</p>
+<p>Spiking-YOLO 是早期将 SNN 扩展到目标检测任务的重要工作，指出检测任务中的回归问题会导致 SNN 性能退化，并提出 channel-wise normalization、signed neuron 等方法缓解转换误差。之后一些工作继续从低时间步、高精度、事件检测和硬件部署角度改进 SNN 检测器。</p>
+<hr>
+<h2 id="12-我的阅读理解：SNN-研究正在从“能不能训练”走向“能不能实用”"><a href="#12-我的阅读理解：SNN-研究正在从“能不能训练”走向“能不能实用”" class="headerlink" title="12. 我的阅读理解：SNN 研究正在从“能不能训练”走向“能不能实用”"></a>12. 我的阅读理解：SNN 研究正在从“能不能训练”走向“能不能实用”</h2><p>我对近几年 SNN 研究的理解是，它大致经历了几个阶段。</p>
+<h3 id="12-1-第一阶段：解决训练可行性"><a href="#12-1-第一阶段：解决训练可行性" class="headerlink" title="12.1 第一阶段：解决训练可行性"></a>12.1 第一阶段：解决训练可行性</h3><p>早期核心问题是：SNN 的脉冲函数不可导，能不能训练？替代梯度、STBP、ANN-SNN conversion 等方法使深度 SNN 可以在 MNIST、CIFAR、ImageNet 等任务上训练起来。</p>
+<h3 id="12-2-第二阶段：解决深层结构问题"><a href="#12-2-第二阶段：解决深层结构问题" class="headerlink" title="12.2 第二阶段：解决深层结构问题"></a>12.2 第二阶段：解决深层结构问题</h3><p>SEW-ResNet、Spiking ResNet、TET 等方法关注深层网络训练、时间维度泛化和低时间步推理。这个阶段说明，SNN 不能只做浅层玩具模型，需要具备深度视觉任务能力。</p>
+<h3 id="12-3-第三阶段：解决架构表达能力问题"><a href="#12-3-第三阶段：解决架构表达能力问题" class="headerlink" title="12.3 第三阶段：解决架构表达能力问题"></a>12.3 第三阶段：解决架构表达能力问题</h3><p>Spikformer、Spikingformer、Spike-driven Transformer V2 等工作将 Transformer、attention、residual learning 引入 SNN，尝试提升全局建模能力，并思考如何避免非脉冲计算破坏能效优势。</p>
+<h3 id="12-4-第四阶段：解决真实任务与硬件部署问题"><a href="#12-4-第四阶段：解决真实任务与硬件部署问题" class="headerlink" title="12.4 第四阶段：解决真实任务与硬件部署问题"></a>12.4 第四阶段：解决真实任务与硬件部署问题</h3><p>目标检测、事件视觉、Loihi&#x2F;Loihi 2 部署、边缘设备低延迟推理等工作说明，SNN 的研究重点正在从分类精度转向真实系统。这个阶段更关心：</p>
+<ul>
+<li>低时间步；</li>
+<li>低发放率；</li>
+<li>高精度；</li>
+<li>可部署；</li>
+<li>硬件友好；</li>
+<li>复杂视觉任务。</li>
+</ul>
+<p>我认为这是 SNN 真正走向实用的关键阶段。</p>
+<hr>
+<h2 id="13-结合目标检测方向的思考"><a href="#13-结合目标检测方向的思考" class="headerlink" title="13. 结合目标检测方向的思考"></a>13. 结合目标检测方向的思考</h2><p>我目前更关注 SNN 在目标检测任务中的应用。相比分类，检测任务更能暴露 SNN 的核心矛盾：<strong>脉冲稀疏性带来能效优势，但检测需要高保真空间特征和连续定位信息</strong>。</p>
+<p>因此，我认为 SNN 检测的关键问题不是简单地“把 YOLO 换成 SNN”，而是要处理以下几组矛盾。</p>
+<h3 id="13-1-稀疏性与信息保真"><a href="#13-1-稀疏性与信息保真" class="headerlink" title="13.1 稀疏性与信息保真"></a>13.1 稀疏性与信息保真</h3><p>发放率越低，理论能耗越低，但特征信息损失越大。检测任务对小目标和边界框位置敏感，因此不能盲目追求极低发放率。</p>
+<p>一个可能的研究方向是：让不同层、不同尺度、不同任务分支具有不同的脉冲稀疏程度。例如：</p>
+<ul>
+<li>浅层特征保持较高时空分辨率；</li>
+<li>深层语义特征更强脉冲化；</li>
+<li>分类分支可以更稀疏；</li>
+<li>回归分支保留更多连续或高精度信息。</li>
+</ul>
+<h3 id="13-2-低时间步与高精度"><a href="#13-2-低时间步与高精度" class="headerlink" title="13.2 低时间步与高精度"></a>13.2 低时间步与高精度</h3><p>实际部署中，$T$ 不能太大。若 $T&#x3D;16$ 或 $T&#x3D;32$ 才能达到较好精度，实时检测优势会被削弱。因此，低时间步训练是检测任务的核心问题。</p>
+<p>可以考虑：</p>
+<ul>
+<li>更好的输入编码；</li>
+<li>时间维度蒸馏；</li>
+<li>膜电位分布约束；</li>
+<li>特征对齐；</li>
+<li>低时间步专用检测头；</li>
+<li>分支级别的动态时间步。</li>
+</ul>
+<h3 id="13-3-CNN-教师与-SNN-学生"><a href="#13-3-CNN-教师与-SNN-学生" class="headerlink" title="13.3 CNN 教师与 SNN 学生"></a>13.3 CNN 教师与 SNN 学生</h3><p>在检测任务中，CNN&#x2F;ANN 教师模型拥有更稳定的 dense feature。SNN 学生模型则具有事件驱动和低功耗潜力。二者结合时，不应该只做最终 logits 蒸馏，而应考虑中间特征、梯度信息和多尺度结构对齐。</p>
+<p>我认为比较有价值的蒸馏对象包括：</p>
+<ol>
+<li>Backbone 多尺度特征；</li>
+<li>Neck 融合特征；</li>
+<li>检测头前的 task-specific features；</li>
+<li>分类&#x2F;回归分支的梯度方向；</li>
+<li>膜电位或发放率的时间统计量。</li>
+</ol>
+<p>这类方法的核心不是让 SNN 完全模仿 ANN，而是利用 ANN 提供训练信号，帮助 SNN 在低时间步和低发放率下保留检测所需的关键信息。</p>
+<h3 id="13-4-检测头是否应该完全脉冲化？"><a href="#13-4-检测头是否应该完全脉冲化？" class="headerlink" title="13.4 检测头是否应该完全脉冲化？"></a>13.4 检测头是否应该完全脉冲化？</h3><p>从工程角度看，一个值得思考的问题是：检测模型中是否所有模块都必须是 SNN？</p>
+<p>如果追求完全神经形态部署，当然希望全网络 spike-driven。但如果目标是实际检测性能和低功耗平衡，则可以采用混合结构：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">Spiking Backbone + Spiking/Hybrid Neck + ANN Detection Head<br></code></pre></td></tr></table></figure>
+
+<p>或者：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs text">Spiking Feature Extractor + Lightweight Real-valued Regression Head<br></code></pre></td></tr></table></figure>
+
+<p>这种混合方式未必“最纯粹”，但可能在现阶段更实用。尤其对于边界框回归这种连续任务，完全二值化并不一定是最优选择。</p>
+<hr>
+<h2 id="14-当前-SNN-研究的几个开放问题"><a href="#14-当前-SNN-研究的几个开放问题" class="headerlink" title="14. 当前 SNN 研究的几个开放问题"></a>14. 当前 SNN 研究的几个开放问题</h2><h3 id="14-1-SNN-的能耗评估需要更公平"><a href="#14-1-SNN-的能耗评估需要更公平" class="headerlink" title="14.1 SNN 的能耗评估需要更公平"></a>14.1 SNN 的能耗评估需要更公平</h3><p>很多论文会报告 theoretical energy，但不同工作对能耗计算方式、硬件假设、时间步和发放率统计并不完全一致。未来需要更统一的 benchmark 和硬件实际测量。</p>
+<h3 id="14-2-静态图像任务不一定是-SNN-的最佳场景"><a href="#14-2-静态图像任务不一定是-SNN-的最佳场景" class="headerlink" title="14.2 静态图像任务不一定是 SNN 的最佳场景"></a>14.2 静态图像任务不一定是 SNN 的最佳场景</h3><p>在静态图像上，SNN 往往需要人为编码，可能失去事件驱动优势。事件相机、低功耗传感器、边缘实时系统可能更适合 SNN。</p>
+<h3 id="14-3-深层-SNN-的训练仍然不稳定"><a href="#14-3-深层-SNN-的训练仍然不稳定" class="headerlink" title="14.3 深层 SNN 的训练仍然不稳定"></a>14.3 深层 SNN 的训练仍然不稳定</h3><p>虽然已有 SEW-ResNet、TET、Spikformer 等进展，但 SNN 对超参数、时间步、神经元模型、归一化策略仍较敏感。如何形成像 CNN&#x2F;Transformer 那样稳定可复用的训练 recipe，仍然是重要问题。</p>
+<h3 id="14-4-复杂任务中的连续信息表达仍然不足"><a href="#14-4-复杂任务中的连续信息表达仍然不足" class="headerlink" title="14.4 复杂任务中的连续信息表达仍然不足"></a>14.4 复杂任务中的连续信息表达仍然不足</h3><p>检测、分割、深度估计等任务需要精细空间信息和连续输出。SNN 如何兼顾离散脉冲和连续预测，是未来研究重点。</p>
+<h3 id="14-5-SNN-与大模型时代的关系还不明确"><a href="#14-5-SNN-与大模型时代的关系还不明确" class="headerlink" title="14.5 SNN 与大模型时代的关系还不明确"></a>14.5 SNN 与大模型时代的关系还不明确</h3><p>当前大模型依赖大规模密集矩阵计算，而 SNN 强调稀疏事件驱动。二者看似方向不同，但在边缘智能、低功耗感知、事件驱动推理、多模态时序建模中可能存在结合空间。</p>
+<hr>
+<h2 id="15-小结"><a href="#15-小结" class="headerlink" title="15. 小结"></a>15. 小结</h2><p>SNN 的核心价值不只是“模拟大脑”，而是提供了一种以时间、事件和稀疏性为核心的计算范式。它与 ANN 的差异主要体现在：</p>
+<ul>
+<li>信息表示：连续实值 vs 二值脉冲；</li>
+<li>计算机制：同步 dense 计算 vs 事件驱动稀疏计算；</li>
+<li>模型状态：无显式膜电位 vs 具有神经元动力学；</li>
+<li>训练方式：标准 BP vs surrogate gradient &#x2F; BPTT &#x2F; conversion；</li>
+<li>应用优势：通用深度学习 vs 低功耗时序感知和神经形态硬件。</li>
+</ul>
+<p>从近年研究看，SNN 已经从早期的基础分类任务逐渐走向深层结构、Transformer 架构、目标检测、事件视觉和硬件部署。我的理解是，未来 SNN 真正有潜力的方向不一定是直接替代所有 ANN，而是在 <strong>事件数据、低功耗边缘计算、时序视觉、神经形态硬件和复杂感知任务</strong> 中找到更适合自己的位置。</p>
+<p>对于我目前关注的目标检测任务，SNN 的核心挑战是如何在低时间步、低发放率和高定位精度之间取得平衡。蒸馏、特征对齐、梯度引导、混合检测头、多尺度脉冲表示和事件视觉任务，都是值得继续深入的方向。</p>
+<hr>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ol>
+<li><p>Wolfgang Maass. <a target="_blank" rel="noopener" href="https://www.sciencedirect.com/science/article/pii/S0893608097000117">Networks of Spiking Neurons: The Third Generation of Neural Network Models</a>. Neural Networks, 1997.</p>
+</li>
+<li><p>Wulfram Gerstner, Werner M. Kistler, Richard Naud, Liam Paninski. <a target="_blank" rel="noopener" href="https://neuronaldynamics.epfl.ch/">Neuronal Dynamics: From Single Neurons to Networks and Models of Cognition</a>. Cambridge University Press, 2014.</p>
+</li>
+<li><p>Yujie Wu, Lei Deng, Guoqi Li, Jun Zhu, Luping Shi. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1706.02609">Spatio-Temporal Backpropagation for Training High-Performance Spiking Neural Networks</a>. arXiv, 2017.</p>
+</li>
+<li><p>Abhronil Sengupta, Yuting Ye, Robert Wang, Chiao Liu, Kaushik Roy. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1802.02627">Going Deeper in Spiking Neural Networks: VGG and Residual Architectures</a>. arXiv, 2018.</p>
+</li>
+<li><p>Emre O. Neftci, Hesham Mostafa, Friedemann Zenke. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1901.09948">Surrogate Gradient Learning in Spiking Neural Networks</a>. IEEE Signal Processing Magazine, 2019.</p>
+</li>
+<li><p>Seijoon Kim, Seongsik Park, Byunggook Na, Sungroh Yoon. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/1903.06530">Spiking-YOLO: Spiking Neural Network for Energy-Efficient Object Detection</a>. AAAI, 2020.</p>
+</li>
+<li><p>Wei Fang, Zhaofei Yu, Yanqi Chen, Tiejun Huang, Timothée Masquelier, Yonghong Tian. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2102.04159">Deep Residual Learning in Spiking Neural Networks</a>. NeurIPS, 2021.</p>
+</li>
+<li><p>Man Yao, Huanhuan Gao, Guangshe Zhao, Dingheng Wang, Yihan Lin, Zhaoxu Yang, Guoqi Li. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2107.11711">Temporal-wise Attention Spiking Neural Networks for Event Streams Classification</a>. ICCV, 2021.</p>
+</li>
+<li><p>Shikuang Deng, Yuhang Li, Shanghang Zhang, Shi Gu. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2202.11946">Temporal Efficient Training of Spiking Neural Network via Gradient Re-weighting</a>. ICLR, 2022.</p>
+</li>
+<li><p>Wenzhe Guo, Mohammed E. Fouda, Ahmed M. Eltawil, Khaled Nabil Salama. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2201.07210">Efficient Training of Spiking Neural Networks with Temporally-Truncated Local Backpropagation Through Time</a>. Frontiers in Neuroscience, 2022.</p>
+</li>
+<li><p>Zhaokun Zhou, Yuesheng Zhu, Chao He, Yaowei Wang, Shuicheng Yan, Yonghong Tian, Li Yuan. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2209.15425">Spikformer: When Spiking Neural Network Meets Transformer</a>. ICLR, 2023.</p>
+</li>
+<li><p>Chenlin Zhou, Liutao Yu, Zhaokun Zhou, Zhengyu Ma, Han Zhang, Huihui Zhou, Yonghong Tian. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2304.11954">Spikingformer: Spike-driven Residual Learning for Transformer-based Spiking Neural Network</a>. arXiv, 2023.</p>
+</li>
+<li><p>Yufei Guo, Xiaode Liu, Yuanpei Chen, Liwen Zhang, Weihang Peng, Yuhan Zhang, Xuhui Huang, Zhe Ma. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2308.06787">RMP-Loss: Regularizing Membrane Potential Distribution for Spiking Neural Networks</a>. arXiv, 2023.</p>
+</li>
+<li><p>Jinye Qu, Zeyu Gao, Tielin Zhang, Yanfeng Lu, Huajin Tang, Hong Qiao. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2306.12010">Spiking Neural Network for Ultra-low-latency and High-accurate Object Detection</a>. arXiv, 2023.</p>
+</li>
+<li><p>Man Yao, Jiakui Hu, Tianxiang Hu, Yifan Xu, Zhaokun Zhou, Yonghong Tian, Bo Xu, Guoqi Li. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2404.03663">Spike-driven Transformer V2: Meta Spiking Neural Network Architecture Inspiring the Design of Next-generation Neuromorphic Chips</a>. ICLR, 2024.</p>
+</li>
+<li><p>Diego A. Silva, Kamilya Smagulova, Ahmed Elsheikh, Mohammed E. Fouda, Ahmed M. Eltawil. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2408.05321">A Recurrent YOLOv8-based Framework for Event-Based Object Detection</a>. arXiv, 2024.</p>
+</li>
+<li><p>Chenyang Li, Wenxuan Liu, Guoqiang Gong, Xiaobo Ding, Xian Zhong. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2503.24389">SU-YOLO: Spiking Neural Network for Efficient Underwater Object Detection</a>. arXiv, 2025.</p>
+</li>
+<li><p>Shenqi Wang, Yingfu Xu, Amirreza Yousefzadeh, Sherif Eissa, Henk Corporaal, Federico Corradi, Guangzhi Tang. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2506.13440">Sparse Convolutional Recurrent Learning for Efficient Event-based Neuromorphic Object Detection</a>. arXiv, 2025.</p>
+</li>
+<li><p>Balázs Mészáros, James C. Knight, Jonathan Timcheck, Thomas Nowotny. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2510.13757">A Complete Pipeline for Deploying SNNs with Synaptic Delays on Loihi 2</a>. arXiv, 2025.</p>
+</li>
+<li><p>Bodo Rueckauer, Connor Bybee, Ralf Goettsche, Yashwardhan Singh, Joyesh Mishra, Andreas Wild. <a target="_blank" rel="noopener" href="https://arxiv.org/abs/2101.04261">NxTF: An API and Compiler for Deep Spiking Neural Networks on Intel Loihi</a>. arXiv, 2021.</p>
+</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%A7%91%E7%A0%94%E7%AC%94%E8%AE%B0/" class="category-chain-item">科研笔记</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/SNN/" class="print-no-link">#SNN</a>
+      
+        <a href="/tags/%E8%84%89%E5%86%B2%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C/" class="print-no-link">#脉冲神经网络</a>
+      
+        <a href="/tags/%E7%A5%9E%E7%BB%8F%E5%BD%A2%E6%80%81%E8%AE%A1%E7%AE%97/" class="print-no-link">#神经形态计算</a>
+      
+        <a href="/tags/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/" class="print-no-link">#深度学习</a>
+      
+        <a href="/tags/%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" class="print-no-link">#目标检测</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>SNN 脉冲神经网络科研笔记整理</div>
+      <div>https://fengzichao.github.io/2026/05/23/SNN脉冲神经网络科研笔记整理/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Feng Zichao</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2026年5月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-cc-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2026/05/23/%E4%B8%AA%E4%BA%BA%E7%BD%91%E9%A1%B5%E9%87%8D%E6%96%B0%E5%BC%80%E5%A7%8B/" title="个人网页重新开始">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">个人网页重新开始</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2026/05/23/%E6%99%B4%E5%A4%A9%E3%80%81%E9%9B%A8%E5%A4%A9%E5%92%8C%E5%91%A8%E6%9D%B0%E4%BC%A6/" title="晴天、雨天和周杰伦">
+                        <span class="hidden-mobile">晴天、雨天和周杰伦</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"dark"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <span>© 2026 Feng Zichao</span> <i class="iconfont icon-love"></i> <span>AI · Research · Life</span> <br> <span>Powered by Hexo & Fluid</span> 
+    </div>
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    function isExpandAllEnabled() {
+      return CONFIG.toc && CONFIG.toc.expand_all === true;
+    }
+    function expandAllToc() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .tocbot-is-collapsed').removeClass('tocbot-is-collapsed');
+    }
+    function updateTocToggle($li, $childList) {
+      var $toggle = $li.children('.toc-toggle');
+      if ($toggle.length === 0) { return; }
+      var collapsed = $childList.hasClass('tocbot-is-collapsed');
+      $toggle
+        .toggleClass('toc-toggle-collapsed', collapsed)
+        .toggleClass('toc-toggle-expanded', !collapsed);
+    }
+    function bindTocToggle() {
+      if (!isExpandAllEnabled()) { return; }
+      jQuery('#toc-body .toc-list-item').each(function() {
+        var $li = jQuery(this);
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) {
+          if ($li.children('.toc-toggle').length === 0) {
+            $li.prepend('<span class="toc-toggle toc-toggle-placeholder" aria-hidden="true">›</span>');
+          }
+          return;
+        }
+
+        if ($li.children('.toc-toggle').length === 0) {
+          $li.prepend('<span class="toc-toggle toc-toggle-expanded" aria-hidden="true">›</span>');
+        }
+        updateTocToggle($li, $childList);
+      });
+      jQuery('#toc-body').off('click.tocToggle').on('click.tocToggle', '.toc-toggle', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var $li = jQuery(this).parent('.toc-list-item');
+        var $childList = $li.children('ol');
+        if ($childList.length === 0) { return; }
+        $childList.toggleClass('tocbot-is-collapsed');
+        updateTocToggle($li, $childList);
+      });
+      if (!window.__tocToggleObserver) {
+        window.__tocToggleObserver = new MutationObserver(function(mutations) {
+          mutations.forEach(function(mutation) {
+            if (mutation.type !== 'attributes' || mutation.attributeName !== 'class') { return; }
+            var $list = jQuery(mutation.target);
+            var $li = $list.parent('.toc-list-item');
+            if ($li.length === 0) { return; }
+            updateTocToggle($li, $list);
+          });
+        });
+        jQuery('#toc-body ol').each(function() {
+          window.__tocToggleObserver.observe(this, { attributes: true });
+        });
+      }
+    }
+    var tocConfig = Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc);
+    if (isExpandAllEnabled()) {
+      tocConfig.collapseDepth = 6;
+    }
+    window.tocbot.init(tocConfig);
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+    expandAllToc();
+    bindTocToggle();
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+        expandAllToc();
+        bindTocToggle();
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/5.0.0/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

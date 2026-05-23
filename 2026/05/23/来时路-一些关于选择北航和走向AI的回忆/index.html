@@ -491,11 +491,11 @@
       
         <a href="/tags/%E7%94%9F%E6%B4%BB%E8%AE%B0%E5%BD%95/" class="print-no-link">#生活记录</a>
       
+        <a href="/tags/%E6%88%90%E9%95%BF/" class="print-no-link">#成长</a>
+      
         <a href="/tags/%E5%8C%97%E8%88%AA/" class="print-no-link">#北航</a>
       
         <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/" class="print-no-link">#人工智能</a>
-      
-        <a href="/tags/%E6%88%90%E9%95%BF/" class="print-no-link">#成长</a>
       
     </div>
   
@@ -552,9 +552,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2026/05/23/%E4%B8%AA%E4%BA%BA%E7%BD%91%E9%A1%B5%E9%87%8D%E6%96%B0%E5%BC%80%E5%A7%8B/" title="个人网页重新开始">
+                      <a href="/2026/05/23/%E5%A4%A7%E5%AD%A6%E5%9B%9B%E5%B9%B4%EF%BC%8C%E5%92%8C%E4%B8%80%E4%BA%9B%E6%B2%A1%E6%9C%89%E5%8F%91%E7%94%9F%E7%9A%84%E6%95%85%E4%BA%8B/" title="大学四年，和一些没有发生的故事">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">个人网页重新开始</span>
+                        <span class="hidden-mobile">大学四年，和一些没有发生的故事</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -562,8 +562,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2026/05/23/%E5%A4%A7%E5%AD%A6%E5%9B%9B%E5%B9%B4%EF%BC%8C%E5%92%8C%E4%B8%80%E4%BA%9B%E6%B2%A1%E6%9C%89%E5%8F%91%E7%94%9F%E7%9A%84%E6%95%85%E4%BA%8B/" title="大学四年，和一些没有发生的故事">
-                        <span class="hidden-mobile">大学四年，和一些没有发生的故事</span>
+                      <a href="/2026/05/23/%E6%99%9A%E8%87%AA%E4%B9%A0%E4%B9%8B%E5%90%8E%EF%BC%8C%E5%92%8C%E9%82%A3%E4%BA%9B%E5%BE%88%E7%9F%AD%E7%9A%84%E5%91%A8%E6%9C%AB/" title="晚自习之后，和那些很短的周末">
+                        <span class="hidden-mobile">晚自习之后，和那些很短的周末</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -621,6 +621,27 @@
 
   
 
+
+  
+  
+
+
+
+
+
+  <script>
+  Fluid.utils.createScript('https://lib.baomitu.com/mermaid/8.14.0/mermaid.min.js', function() {
+    mermaid.initialize({"theme":"dark"});
+
+    Fluid.utils.listenDOMLoaded(function() {
+      Fluid.events.registerRefreshCallback(function() {
+        if ('mermaid' in window) {
+          mermaid.init();
+        }
+      });
+    });
+  });
+</script>
 
 
 
@@ -861,6 +882,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
