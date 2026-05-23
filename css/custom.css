@@ -1,79 +1,106 @@
 /* =========================================================
    Feng Zichao Blog Custom Style
-   暗色主题优化 + 稳定卡片质感
+   适用于 Hexo Fluid 暗色主题
+   功能：
+   1. 全站深色背景与导航栏玻璃效果
+   2. 首页/文章/关于页卡片质感优化
+   3. 首页文章摘要裁切修复：无图 3 行，有图 2 行
+   4. 正文阅读体验、链接、代码块、表格、公式、Mermaid 优化
+   5. 移动端适配
    ========================================================= */
 
 
-/* ---------- 页面整体背景 ---------- */
+/* =========================================================
+   1. 全站背景
+   ========================================================= */
 
+html,
 body {
   background: #0f1623 !important;
 }
 
+body {
+  color: rgba(232, 239, 248, 0.9) !important;
+}
+
+/* 页面主体加一点非常淡的蓝紫氛围光 */
 main {
   background:
-    radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.04), transparent 28%),
-    radial-gradient(circle at 85% 8%, rgba(129, 140, 248, 0.035), transparent 30%),
+    radial-gradient(circle at 15% 0%, rgba(56, 189, 248, 0.045), transparent 28%),
+    radial-gradient(circle at 85% 8%, rgba(129, 140, 248, 0.04), transparent 30%),
     #0f1623 !important;
 }
 
 
-/* ---------- 顶部导航栏 ---------- */
+/* =========================================================
+   2. 顶部导航栏
+   ========================================================= */
 
 .navbar {
-  background: rgba(7, 13, 24, 0.35) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(7, 13, 24, 0.36) !important;
+  backdrop-filter: blur(9px);
+  -webkit-backdrop-filter: blur(9px);
 }
 
 .navbar.scrolling-navbar.top-nav-collapse {
-  background: rgba(7, 13, 24, 0.88) !important;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.32);
+  background: rgba(7, 13, 24, 0.9) !important;
+  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
 }
 
 .navbar-brand,
 .navbar-nav .nav-link {
+  color: rgba(245, 250, 255, 0.92) !important;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.72);
 }
 
+.navbar-brand:hover,
+.navbar-nav .nav-link:hover {
+  color: #7dd3fc !important;
+}
 
-/* ---------- 首页副标题 ---------- */
+
+/* =========================================================
+   3. 首页头图副标题
+   ========================================================= */
 
 #subtitle {
   color: rgba(248, 251, 255, 0.96) !important;
   text-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.75),
-    0 0 22px rgba(125, 211, 252, 0.16);
+    0 2px 8px rgba(0, 0, 0, 0.78),
+    0 0 22px rgba(125, 211, 252, 0.18);
   letter-spacing: 0.045em;
   font-weight: 600;
 }
 
 
-/* ---------- 主内容卡片 ---------- */
+/* =========================================================
+   4. 主内容卡片 #board
+   ========================================================= */
 
 #board {
   position: relative;
   background: linear-gradient(
     145deg,
-    rgba(28, 39, 52, 0.90),
-    rgba(18, 27, 40, 0.93)
+    rgba(28, 39, 52, 0.91),
+    rgba(18, 27, 40, 0.94)
   ) !important;
 
-  border: 1px solid rgba(125, 211, 252, 0.13);
+  border: 1px solid rgba(125, 211, 252, 0.14);
   border-radius: 14px;
 
   box-shadow:
     0 20px 54px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.035),
-    0 0 35px rgba(56, 189, 248, 0.035);
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 35px rgba(56, 189, 248, 0.04);
 
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
 
-  overflow: visible;
+  /* 重要：关于页头像会悬浮到卡片外，不能 hidden */
+  overflow: visible !important;
 }
 
-/* 卡片顶部加一点很淡的高光，模拟玻璃边缘 */
+/* 卡片顶部细高光，模拟玻璃边缘 */
 #board::before {
   content: "";
   position: absolute;
@@ -84,28 +111,34 @@ main {
   background: linear-gradient(
     90deg,
     transparent,
-    rgba(180, 220, 255, 0.28),
+    rgba(180, 220, 255, 0.30),
     transparent
   );
   pointer-events: none;
 }
 
-/* 卡片内部不要额外挤压排版 */
 #board .container {
   position: relative;
   z-index: 1;
 }
 
 
-/* ---------- 首页文章卡片 ---------- */
+/* =========================================================
+   5. 首页文章列表
+   ========================================================= */
 
 .index-card {
-  padding-top: 0.2rem;
-  padding-bottom: 0.2rem;
+  padding-top: 0.4rem;
+  padding-bottom: 0.8rem;
 }
 
+.index-card + .index-card {
+  margin-top: 0.65rem;
+}
+
+/* 首页文章标题 */
 .index-header {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 .index-header a {
@@ -120,39 +153,85 @@ main {
   text-shadow: 0 0 14px rgba(125, 211, 252, 0.32);
 }
 
+/* 首页文章封面图 */
+.index-img img,
+.index-img {
+  border-radius: 8px;
+}
+
+.index-img img {
+  object-fit: cover;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+}
+
+/* 首页摘要基础样式 */
 .index-excerpt,
-.index-excerpt div {
+.index-excerpt div,
+.index-excerpt p {
   color: rgba(226, 234, 246, 0.86) !important;
-  line-height: 1.82;
+  line-height: 1.75 !important;
   letter-spacing: 0.018em;
 }
 
+/* 默认：无图文章摘要显示 3 行 */
+.index-excerpt {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden !important;
+
+  max-height: calc(1.75em * 3) !important;
+  margin-top: 0.42rem;
+  margin-bottom: 0.55rem;
+}
+
+/* 有封面图的文章：右侧空间更小，摘要显示 2 行，避免底部被截断 */
+.index-card:has(.index-img) .index-excerpt {
+  -webkit-line-clamp: 2;
+  max-height: calc(1.75em * 2) !important;
+}
+
+/* 首页底部日期、分类、标签区域 */
 .index-btm {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
   padding-top: 0.45rem;
   border-top: 1px solid rgba(148, 163, 184, 0.12);
 }
 
-
-/* ---------- 文章元信息 ---------- */
-
-.post-meta,
-.post-meta a,
 .index-btm,
-.index-btm a {
+.index-btm a,
+.post-meta,
+.post-meta a {
   color: rgba(205, 216, 230, 0.74) !important;
 }
 
+.index-btm i,
 .post-meta i {
   color: rgba(125, 211, 252, 0.68) !important;
 }
 
+.index-btm a:hover,
 .post-meta a:hover {
   color: #7dd3fc !important;
 }
 
+/* 兼容不支持 :has 的浏览器：至少保证摘要不会露半行 */
+@supports not selector(:has(*)) {
+  .index-excerpt {
+    -webkit-line-clamp: 2;
+    max-height: calc(1.75em * 2) !important;
+  }
+}
 
-/* ---------- 关于页头像 ---------- */
+
+/* =========================================================
+   6. 关于页
+   ========================================================= */
+
+.about-avatar {
+  position: relative;
+  z-index: 10;
+}
 
 .about-avatar img {
   border: 3px solid rgba(226, 232, 240, 0.88);
@@ -160,9 +239,6 @@ main {
     0 10px 30px rgba(0, 0, 0, 0.46),
     0 0 24px rgba(125, 211, 252, 0.16);
 }
-
-
-/* ---------- 关于页名字和简介 ---------- */
 
 .about-name {
   color: rgba(248, 251, 255, 0.98) !important;
@@ -175,9 +251,6 @@ main {
   font-size: 0.98rem;
   letter-spacing: 0.03em;
 }
-
-
-/* ---------- 关于页图标 ---------- */
 
 .about-icons {
   margin-top: 0.65rem;
@@ -195,13 +268,16 @@ main {
   text-shadow: 0 0 14px rgba(125, 211, 252, 0.36);
 }
 
+/* 微信/QQ 二维码图片 */
 .qr-img {
   border-radius: 10px;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 
 
-/* ---------- 正文排版 ---------- */
+/* =========================================================
+   7. 正文阅读排版
+   ========================================================= */
 
 .markdown-body {
   color: rgba(232, 239, 248, 0.90) !important;
@@ -218,11 +294,14 @@ main {
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3,
-.markdown-body h4 {
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
   color: rgba(248, 251, 255, 0.98) !important;
   font-weight: 700;
 }
 
+/* h2：科研/生活文章的主分节 */
 .markdown-body h2 {
   margin-top: 2.1rem !important;
   margin-bottom: 1rem !important;
@@ -242,14 +321,20 @@ main {
   background: linear-gradient(180deg, #7dd3fc, #818cf8);
 }
 
-.markdown-body ul {
-  padding-left: 1.4rem;
+.markdown-body h3 {
+  margin-top: 1.7rem !important;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 1.45rem;
 }
 
 .markdown-body li {
   margin: 0.35rem 0;
 }
 
+/* 正文链接 */
 .markdown-body a {
   color: #7dd3fc !important;
   text-decoration: none;
@@ -261,8 +346,113 @@ main {
   border-bottom-color: #bae6fd;
 }
 
+/* 引用块 */
+.markdown-body blockquote {
+  color: rgba(224, 232, 244, 0.86) !important;
+  background: rgba(15, 23, 42, 0.42) !important;
+  border-left: 4px solid rgba(125, 211, 252, 0.55) !important;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
 
-/* ---------- 页脚 ---------- */
+/* 表格 */
+.markdown-body table {
+  background: rgba(15, 23, 42, 0.28);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.markdown-body table th {
+  background: rgba(30, 41, 59, 0.72) !important;
+  color: rgba(248, 251, 255, 0.96) !important;
+}
+
+.markdown-body table td {
+  color: rgba(226, 234, 246, 0.88) !important;
+}
+
+/* 行内代码 */
+.markdown-body code {
+  color: #bae6fd !important;
+  background: rgba(15, 23, 42, 0.68) !important;
+  border: 1px solid rgba(125, 211, 252, 0.12);
+  border-radius: 5px;
+}
+
+/* 代码块 */
+.markdown-body pre {
+  background: rgba(8, 13, 24, 0.78) !important;
+  border: 1px solid rgba(125, 211, 252, 0.14);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.markdown-body pre code {
+  background: transparent !important;
+  border: none;
+  color: rgba(230, 238, 250, 0.92) !important;
+}
+
+
+/* =========================================================
+   8. 数学公式和 Mermaid 图
+   ========================================================= */
+
+/* MathJax / KaTeX 公式颜色 */
+mjx-container,
+.katex,
+.katex-display {
+  color: rgba(238, 245, 255, 0.94) !important;
+}
+
+/* 防止长公式撑破页面 */
+mjx-container[jax="CHTML"][display="true"],
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+}
+
+/* Mermaid 渲染图块 */
+.mermaid {
+  display: flex;
+  justify-content: center;
+  margin: 1.2rem 0;
+  padding: 1rem;
+  background: rgba(248, 250, 252, 0.96);
+  border-radius: 10px;
+  overflow-x: auto;
+}
+
+/* 文章里的自定义图示卡片 */
+.markdown-body div[style*="border"] {
+  max-width: 100%;
+}
+
+
+/* =========================================================
+   9. 目录和滚动按钮
+   ========================================================= */
+
+.tocbot-list a {
+  color: rgba(210, 220, 235, 0.78) !important;
+}
+
+.tocbot-list a:hover,
+.tocbot-list a.is-active-link {
+  color: #7dd3fc !important;
+}
+
+#scroll-top-button {
+  background: rgba(30, 41, 59, 0.88) !important;
+  color: rgba(248, 251, 255, 0.9) !important;
+  border: 1px solid rgba(125, 211, 252, 0.16);
+}
+
+
+/* =========================================================
+   10. 页脚
+   ========================================================= */
 
 .footer-inner {
   color: rgba(210, 220, 235, 0.78) !important;
@@ -277,7 +467,9 @@ main {
 }
 
 
-/* ---------- 移动端优化 ---------- */
+/* =========================================================
+   11. 移动端适配
+   ========================================================= */
 
 @media (max-width: 768px) {
   #board {
@@ -285,12 +477,22 @@ main {
   }
 
   .index-card {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 0.2rem;
+    padding-bottom: 0.45rem;
+  }
+
+  .index-excerpt {
+    -webkit-line-clamp: 2;
+    max-height: calc(1.75em * 2) !important;
   }
 
   .markdown-body {
     font-size: 0.94rem;
+  }
+
+  .markdown-body p,
+  .markdown-body li {
+    line-height: 1.82;
   }
 
   .about-name {
@@ -304,4 +506,30 @@ main {
   #subtitle {
     font-size: 1.25rem;
   }
+
+  .mermaid {
+    padding: 0.65rem;
+  }
+}
+
+/* ===== 归档页时间线优化 ===== */
+
+.archive-list .archive-post {
+  padding: 0.35rem 0;
+}
+
+.archive-list .archive-post a {
+  color: rgba(232, 239, 248, 0.9) !important;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.archive-list .archive-post a:hover {
+  color: #7dd3fc !important;
+  transform: translateX(3px);
+}
+
+.archive-list .archive-year {
+  color: rgba(248, 251, 255, 0.96) !important;
+  font-weight: 800;
+  text-shadow: 0 0 14px rgba(125, 211, 252, 0.18);
 }
