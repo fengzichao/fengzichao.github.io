@@ -292,7 +292,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="An elegant Material-Design theme for Hexo"></span>
+            <span id="subtitle" data-typed-text="BUAA IAI | 北京航空航天大学人工智能研究院,记录科研、代码、论文与生活,Keep learning, keep building."></span>
           
         </div>
 
@@ -477,7 +477,9 @@
       }
       var text = subtitle.getAttribute('data-typed-text');
       
-        typing(text);
+        var texts = ["BUAA IAI | 北京航空航天大学人工智能研究院","记录科研、代码、论文与生活","Keep learning, keep building."];
+        var idx = Math.floor(Math.random() * texts.length);
+        typing(texts[idx]);
       
     })(window, document);
   </script>
