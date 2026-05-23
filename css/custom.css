@@ -1,0 +1,75 @@
+/* ===== 全站暗色阅读优化 ===== */
+
+/* 主内容卡片 */
+#board {
+  background: rgba(30, 40, 52, 0.94) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(160, 190, 230, 0.08);
+}
+
+/* 正文文字 */
+.markdown-body,
+.markdown-body p,
+.markdown-body li {
+  color: rgba(232, 238, 247, 0.88) !important;
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+}
+
+/* 标题 */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  color: rgba(248, 251, 255, 0.96) !important;
+  font-weight: 700;
+}
+
+/* 分割线 */
+.markdown-body h2 {
+  border-bottom: 1px solid rgba(170, 200, 240, 0.18) !important;
+}
+
+/* 首页文章标题 */
+.index-header a {
+  color: rgba(248, 251, 255, 0.96) !important;
+}
+
+/* 首页文章摘要 */
+.index-excerpt,
+.index-excerpt div {
+  color: rgba(224, 232, 244, 0.82) !important;
+  line-height: 1.75;
+}
+
+/* 文章元信息 */
+.post-meta,
+.post-meta a,
+.index-btm,
+.index-btm a {
+  color: rgba(205, 216, 230, 0.72) !important;
+}
+
+/* 关于页名字和简介 */
+.about-name {
+  color: rgba(248, 251, 255, 0.98) !important;
+}
+
+.about-intro {
+  color: rgba(220, 230, 244, 0.82) !important;
+}
+
+/* 关于页图标 */
+.about-icons a {
+  color: rgba(230, 238, 250, 0.82) !important;
+}
+
+.about-icons a:hover {
+  color: #7dd3fc !important;
+}
+
+/* 导航栏文字加一点阴影，避免压在头图上看不清 */
+.navbar-brand,
+.navbar-nav .nav-link {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.65);
+}
