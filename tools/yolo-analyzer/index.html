@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>YOLO Training Analyzer | 免费训练日志分析、mAP曲线、Loss诊断、HTML实验报告</title>
+<meta name="description" content="免费本地分析 Ultralytics YOLO 的 results.csv：查看 mAP、Loss、Precision/Recall 曲线，检测数值异常和指标回落，导出HTML实验报告。无需上传数据。">
+<meta name="robots" content="index,follow">
+<meta name="keywords" content="YOLO results.csv 分析,YOLO训练日志,YOLOv8,YOLO11,YOLO26,mAP曲线,loss曲线,深度学习训练可视化">
+<meta property="og:title" content="YOLO Training Analyzer — 免费训练日志分析">
+<meta property="og:description" content="不用传数据，直接在浏览器分析 YOLO results.csv 并导出报告。">
+<style>
+:root{--bg:#09111d;--panel:#111e31;--line:#2a3d56;--ink:#edf5ff;--dim:#9fb3cc;--blue:#7fd1f2;--green:#74e0ba;--warn:#ffca78}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 85% 0%,#203a59,transparent 40%),var(--bg);font-family:system-ui,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);line-height:1.65}
+a{color:var(--blue)}.wrap{max-width:1050px;margin:auto;padding:24px}.nav{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:8px 0 38px;color:var(--dim)}.nav strong{font-size:16px;color:var(--ink)}
+h1{font-size:clamp(29px,5vw,49px);line-height:1.25;margin:11px 0 15px}h2{font-size:22px;margin:0 0 10px}h3{margin:0 0 8px;font-size:15px}.sub{max-width:770px;color:var(--dim);margin:0 0 25px}
+.tag{font-size:12px;color:var(--green);letter-spacing:.12em;font-weight:800}
+.panel,.card{border:1px solid var(--line);border-radius:19px;background:var(--panel);padding:24px}
+.panel{margin:26px 0}.upload{display:block;text-align:center;cursor:pointer;padding:32px;border:2px dashed #3b7297;border-radius:14px;background:#10283a;transition:.2s}
+.upload:hover{border-color:var(--blue)}.upload b{font-size:18px}.upload span{display:block;color:var(--dim);font-size:13px}
+input[type=file]{display:none}.buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:15px}
+button,.btn{border:1px solid #55718c;border-radius:11px;background:#21364f;color:var(--ink);font:700 14px system-ui;padding:11px 16px;cursor:pointer;text-decoration:none}
+button.primary,.btn.primary{background:var(--blue);border-color:var(--blue);color:#092035}
+button:disabled{opacity:.5;cursor:not-allowed}.notice{font-size:13px;color:var(--dim)}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:16px 0}
+.metric{border:1px solid var(--line);background:#12243a;padding:19px;border-radius:15px}.metric small{color:var(--dim);display:block}.metric b{display:block;font-size:25px;margin-top:6px;word-break:break-all}.metric em{font-style:normal;font-size:12px;color:var(--dim)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:15px}.chart{border:1px solid var(--line);background:#0e192a;border-radius:15px;padding:16px;min-width:0}
+.chart svg{width:100%;height:auto;display:block}.chart p{font-size:12px;color:var(--dim);margin:6px 0 0}
+#findings li{margin:11px 0}.ok{color:var(--green)}.warn{color:var(--warn)}
+#report{display:none}.support{border:1px solid #4b6b86;border-radius:17px;background:linear-gradient(115deg,#1c364f,#112237);padding:22px;margin-top:25px}
+.foot{font-size:12px;color:var(--dim);border-top:1px solid var(--line);padding:25px 0;margin-top:50px}
+dialog{border:1px solid #5a819a;background:#12243b;color:var(--ink);border-radius:22px;max-width:min(92vw,420px);padding:24px;text-align:center;box-shadow:0 20px 70px #0008}
+dialog::backdrop{background:#000b}dialog p{font-size:13px;color:var(--dim)}#qrcode{background:white;padding:12px;border-radius:12px;display:flex;justify-content:center;margin:15px auto;width:max-content;max-width:100%}
+@media(max-width:750px){.grid{grid-template-columns:repeat(2,1fr)}.cols{grid-template-columns:1fr}.panel{padding:17px}.wrap{padding:17px}}
+@media print{.nav,.upload,.buttons,.support,.foot,#input-panel{display:none!important}body{background:white;color:#0b192b}.panel,.card,.chart,.metric{background:white;color:#0b192b;border-color:#cbd5e1}.metric small,.metric em,.chart p,.notice{color:#475569}svg{max-width:100%}}
+</style></head><body><div class="wrap">
+<header class="nav"><strong>◇ YOLO Training Analyzer</strong><a href="/">返回主页</a></header>
+<main><div class="tag">FREE · NO UPLOAD · RUNS IN YOUR BROWSER</div>
+<h1>把 YOLO 训练日志<br>变成一份可读的实验报告。</h1>
+<p class="sub">直接分析 Ultralytics YOLO 的 <code>results.csv</code>：自动识别常见指标，绘制 Loss 与 mAP 曲线，检查异常，并导出 HTML 报告。整个过程在你的浏览器本地完成，不会把训练日志传到服务器。</p>
+<section class="panel" id="input-panel"><label class="upload" for="csv"><b>点击选择 results.csv</b><span>支持拖入文件 · 最大 10 MB · 常见 Ultralytics YOLO 结果表</span></label><input id="csv" type="file" accept=".csv,text/csv">
+<div class="buttons"><button id="demo">试用示例数据</button><button class="primary" id="analyze" disabled>分析日志</button></div>
+<p class="notice" id="status" aria-live="polite">不需要登录，不需要发送模型权重或数据集。</p></section>
+<section id="report">
+<h2>实验概览</h2><p class="notice" id="meta"></p>
+<div class="grid" id="cards"></div>
+<div class="cols"><div class="chart"><h3>训练损失 / Train Loss</h3><div id="losschart"></div></div><div class="chart"><h3>检测精度 / mAP</h3><div id="mapchart"></div></div>
+<div class="chart"><h3>验证损失 / Validation Loss</h3><div id="valchart"></div></div><div class="chart"><h3>Precision / Recall</h3><div id="prchart"></div></div></div>
+<div class="panel"><h2>自动诊断提示</h2><ul id="findings"></ul><p class="notice">这些规则只做初筛。不同 YOLO 版本、训练策略和任务指标存在差异；“曲线平滑”不等于训练正确。</p></div>
+<div class="buttons"><button class="primary" id="export">下载独立 HTML 报告</button><button id="print">打印 / 存为 PDF</button></div>
+<div class="support"><h3>这个工具帮到你了吗？</h3><p>免费使用，没有强制付费。如果它替你省去了整理实验曲线的时间，可以选择自愿赞赏，支持独立开发与后续维护。</p><button id="tip">自愿赞赏作者 · 支付宝</button><p class="notice">赞赏不关联付费订单，也不会解锁任何额外功能。</p></div>
+</section>
+<section class="panel"><h2>如何使用？</h2><ol><li>训练完成后，打开模型运行目录中的 <code>results.csv</code>。</li><li>在上方选择文件（或尝试示例），点击“分析日志”。</li><li>查看训练和验证曲线、最佳 mAP 的 epoch，以及自动检测到的可疑现象。</li><li>下载一份可离线打开的 HTML 报告；也可以通过浏览器打印保存 PDF。</li></ol>
+<p class="notice">适用范围：主要面向常见目标检测训练日志；不支持直接分析 <code>.pt</code> 权重和没有 CSV 记录的训练过程。分隔符与引号按 CSV 标准解析；极端非标准日志可能无法正常分析。</p></section>
+</main><footer class="foot">© 2026 Zichao Feng · 研究与开发工具 · <a href="mailto:fengzichao@buaa.edu.cn">反馈问题</a></footer>
+</div>
+<dialog id="pay"><h2>自愿赞赏</h2><p>感谢支持这个免费的科研小工具。下方二维码仅供自愿赞赏，非购买订单。</p><div id="qrcode"></div><p>用支付宝扫码，或在当前设备打开收款链接。</p><div class="buttons" style="justify-content:center"><a class="btn primary" id="payurl" target="_blank" rel="noopener noreferrer">打开支付宝收款链接</a><button id="close">关闭</button></div></dialog>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" defer></script>
+<script>
+'use strict';
+(function(){
+const payment="https://qr.alipay.com/fkx14345mskkuv4owvrkr16?0&T=58830-03-02 20:25:20";
+const $=id=>document.getElementById(id);
+const state={rows:[],headers:[],source:'',charts:[]};
+let selected=null;
+const num=x=>{const n=Number(String(x??'').trim());return String(x??'').trim()===''?NaN:n};
+const fmt=x=>Number.isFinite(x)?x.toFixed(4):'—';
+function parseCSV(text){
+text=text.replace(/^\uFEFF/,'');const out=[];let row=[],cell='',quoted=false;
+for(let i=0;i<text.length;i++){const c=text[i];if(c==='"'){if(quoted&&text[i+1]==='"'){cell+='"';i++}else quoted=!quoted}
+else if(!quoted&&c===','){row.push(cell);cell=''}else if(!quoted&&(c==='\n'||c==='\r')){if(c==='\r'&&text[i+1]==='\n')i++;row.push(cell);if(row.some(x=>x.trim()))out.push(row);row=[];cell=''}
+else cell+=c}
+if(quoted)throw Error('CSV 引号未闭合');row.push(cell);if(row.some(x=>x.trim()))out.push(row);
+if(out.length<3)throw Error('至少需要表头和 2 行训练数据');return out}
+function e(s){return String(s).replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]))}
+function find(pattern){return state.headers.findIndex(h=>pattern.test(h))}
+function vals(ix){return state.rows.map(r=>ix>=0?num(r[ix]):NaN)}
+function usable(a){return a.map((v,i)=>({x:i+1,y:v})).filter(p=>Number.isFinite(p.y))}
+function curve(series,unit=''){const present=series.filter(s=>s.points.length>=2);
+if(!present.length)return '<p>没有找到足够的可用指标数据。</p>';
+const all=present.flatMap(s=>s.points),maxX=Math.max(...all.map(p=>p.x)),minY=Math.min(...all.map(p=>p.y)),maxY=Math.max(...all.map(p=>p.y)),spread=maxY-minY||1,low=minY-spread*.12,high=maxY+spread*.12,w=580,h=250,L=58,R=15,T=20,B=38,cw=w-L-R,ch=h-T-B;
+const xx=x=>L+(x-1)/(Math.max(1,maxX-1))*cw,yy=y=>T+(high-y)/(high-low)*ch;
+let body='';
+for(let k=0;k<=4;k++){let y=T+k*ch/4,v=high-k*(high-low)/4;body+='<line x1="'+L+'" x2="'+(w-R)+'" y1="'+y+'" y2="'+y+'" stroke="#34485e" stroke-width=".75"/><text x="5" y="'+(y+4)+'" fill="#91a9bf" font-size="12">'+v.toFixed(3)+'</text>'}
+for(const s of present){const pts=s.points.map(p=>xx(p.x).toFixed(1)+','+yy(p.y).toFixed(1)).join(' ');body+='<polyline fill="none" stroke="'+s.color+'" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" points="'+pts+'"/>'}
+body+='<text x="'+L+'" y="'+(h-8)+'" fill="#91a9bf" font-size="12">Epoch / CSV row</text>';
+return '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="训练指标折线图">'+body+'</svg><p>'+present.map(s=>'<span style="color:'+s.color+'">●</span> '+e(s.name)).join(' · ')+'</p>'}
+function render(){
+const heads=state.headers,rows=state.rows,entries=rows.length,finds=[];
+const series=[
+{key:'train',ids:[find(/^train\/box_loss$/i),find(/^train\/cls_loss$/i),find(/^train\/dfl_loss$/i)],colors:['#72d8e0','#e4bd7a','#c68df0'],names:['Box','CLS','DFL']},
+{key:'val',ids:[find(/^val\/box_loss$/i),find(/^val\/cls_loss$/i),find(/^val\/dfl_loss$/i)],colors:['#72d8e0','#e4bd7a','#c68df0'],names:['Box','CLS','DFL']}];
+for(let spec of series){$(spec.key+'chart').innerHTML=curve(spec.ids.map((id,i)=>({name:spec.names[i],color:spec.colors[i],points:usable(vals(id))})))}
+const m50=find(/^metrics\/mAP50\(B\)$/i),m95=find(/^metrics\/mAP50-95\(B\)$/i),pr=find(/^metrics\/precision\(B\)$/i),re=find(/^metrics\/recall\(B\)$/i);
+$('mapchart').innerHTML=curve([{name:'mAP50',color:'#72d8e0',points:usable(vals(m50))},{name:'mAP50-95',color:'#e4bd7a',points:usable(vals(m95))}]);
+$('prchart').innerHTML=curve([{name:'Precision',color:'#72d8e0',points:usable(vals(pr))},{name:'Recall',color:'#bfa1f0',points:usable(vals(re))}]);
+const axis=find(/^epoch$/i),epochs=vals(axis),idx=usable(vals(m95)),best=idx.length?idx.reduce((a,b)=>a.y>b.y?a:b):null;
+const bestEpoch=best?(Number.isFinite(epochs[best.x-1])?epochs[best.x-1]:best.x):null;
+const last=idx.length?idx.at(-1).y:NaN;
+$('cards').innerHTML=[
+['日志行数',entries,'CSV data rows'],['最佳 mAP50-95',best?fmt(best.y):'—',best?'Epoch '+bestEpoch:'未识别指标'],['最终 mAP50-95',fmt(last),'最后有效记录'],['CSV指标列数',heads.length,'含 epoch 与时间等']
+].map(([a,b,c])=>'<div class="metric"><small>'+e(a)+'</small><b>'+e(b)+'</b><em>'+e(c)+'</em></div>').join('');
+if(best&&Number.isFinite(last)&&best.y-last>=.04)finds.push('末次 mAP50-95 比历史最佳值低 '+(best.y-last).toFixed(3)+'；建议对照 best.pt、last.pt 以及验证集波动。');
+if(best&&idx.length>10&&best.x<entries*.45)finds.push('最佳 mAP 出现在训练较早阶段；可以检查后续学习率、过拟合迹象和验证集一致性。');
+for(const s of series){for(const id of s.ids){if(id<0)continue;const arr=vals(id),v=usable(arr),bad=arr.filter(x=>!Number.isFinite(x)).length;if(bad)finds.push(heads[id]+' 有 '+bad+' 条无效或空缺数值，检查训练日志完整性。');
+if(v.length>10){const first=v.slice(0,Math.max(2,Math.floor(v.length*.1))).reduce((sum,p)=>sum+p.y,0)/Math.max(2,Math.floor(v.length*.1));const last10=v.slice(-Math.max(2,Math.floor(v.length*.1))).reduce((sum,p)=>sum+p.y,0)/Math.max(2,Math.floor(v.length*.1));if(last10>first*1.15)finds.push(heads[id]+' 的末段平均损失高于初段，建议检查数据、学习率和训练稳定性。')}}}
+if(find(/^metrics\/mAP50-95\(B\)$/i)<0)finds.push('未找到标准的 metrics/mAP50-95(B) 列，可能是不同任务或自定义日志。');
+if(!finds.length)finds.push('未触发当前规则检测的显著异常；请结合数据集、配置和定性结果复核，不能据此证明训练正确。');
+$('findings').innerHTML=finds.map(s=>'<li>'+e(s)+'</li>').join('');
+$('meta').textContent='数据源：'+state.source+' · '+entries+' 行 · '+heads.length+' 列 · '+new Date().toLocaleString('zh-CN')+' · 全程本地分析';
+$('report').style.display='block';$('report').scrollIntoView({behavior:'smooth'});}
+async function load(){try{if(!selected)return;const text=await selected.text();const data=parseCSV(text);const hdr=data[0].map(x=>x.trim());if(hdr.some(x=>!x))throw Error('表头存在空列名');state.headers=hdr;state.rows=data.slice(1);state.source=selected.name;render();$('status').textContent='已生成报告，文件未上传。'}catch(err){$('status').textContent='分析失败：'+err.message}}
+$('csv').onchange=function(){const f=this.files[0];if(!f)return;if(f.size>10*1024*1024){$('status').textContent='文件不能超过 10 MB';return}selected=f;$('status').textContent='已选择：'+f.name;$('analyze').disabled=false};
+$('analyze').onclick=load;
+$('demo').onclick=function(){const data=['epoch,train/box_loss,train/cls_loss,val/box_loss,val/cls_loss,metrics/mAP50(B),metrics/mAP50-95(B),metrics/precision(B),metrics/recall(B)'];for(let i=0;i<70;i++){const k=i+1;data.push([k,(1.35*Math.exp(-i/28)+.23).toFixed(5),(.95*Math.exp(-i/22)+.15).toFixed(5),(1.3*Math.exp(-i/30)+.28).toFixed(5),(.97*Math.exp(-i/23)+.17).toFixed(5),(.28+.60*(1-Math.exp(-i/19))).toFixed(5),(.13+.56*(1-Math.exp(-i/23))).toFixed(5),(.33+.53*(1-Math.exp(-i/24))).toFixed(5),(.25+.54*(1-Math.exp(-i/20))).toFixed(5)].join(','))}
+selected=new File([data.join('\n')],'demo-results.csv',{type:'text/csv'});$('status').textContent='已载入合成示例（非真实训练）。';$('analyze').disabled=false;load()};
+$('print').onclick=()=>window.print();
+$('export').onclick=function(){const r=$('report').cloneNode(true);r.querySelector('.buttons').remove();r.querySelector('.support').remove();const content='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>YOLO训练报告</title><style>body{font-family:system-ui,Arial;color:#142438;max-width:1100px;margin:auto;padding:22px}h1{font-size:28px}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metric,.chart,.panel{border:1px solid #cbd5e1;border-radius:9px;padding:15px}.metric small,.metric em{display:block;color:#596f86}.metric b{font-size:22px}.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}.chart svg{width:100%}li{line-height:1.8}p{color:#516278}@media(max-width:700px){.grid,.cols{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}}</style><h1>YOLO 训练日志分析报告</h1>'+r.innerHTML+'<p>报告由 YOLO Training Analyzer 本地生成。结果仅供辅助诊断。</p>';const blob=new Blob([content],{type:'text/html;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='yolo-training-report.html';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500)};
+$('tip').onclick=function(){$('pay').showModal();$('payurl').href=payment;if(!$('qrcode').hasChildNodes()){if(typeof QRCode!=='undefined'){new QRCode($('qrcode'),{text:payment,width:190,height:190,correctLevel:QRCode.CorrectLevel.M})}else{$('qrcode').textContent='二维码组件未加载，可使用下方支付链接';}}};
+$('close').onclick=()=>$('pay').close();
+})();
+</script></body></html>
